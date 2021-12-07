@@ -13,13 +13,31 @@ int main() {
 
 	ChessBoard cb = ChessBoard();
 
-	// cout << "Should be valid Bishope move " << cb.board[7][5]->valid_move(7,5,5,3) 
+	cb.submitMove("H3", "B2");
+
+	// Checking King moves ok:
+
+	// cout << "Should be valid King move " << cb.board[7][4]->valid_move(7,4,7,3) 
 	// 	 << endl;
 
-	// cout << "Should be invalid Bishope move " << cb.board[7][5]->valid_move(7,5,0,2) 
+	// cout << "Should be valid King move " << cb.board[7][4]->valid_move(7,4,7,5) 
 	// 	 << endl;
 
-	// cout << "Should be valid Bishope move " << cb.board[7][5]->valid_move(7,5,2,0) 
+	// cout << "Should be invalid King move " << cb.board[7][4]->valid_move(7,4,5,4) 
+	// 	 << endl;
+
+	// cout << "Should be invalid King move " << cb.board[7][4]->valid_move(7,4,7,6) 
+	// 	 << endl;
+
+	// Checking Bishop moves
+
+	// cout << "Should be valid Bishop move " << cb.board[7][5]->valid_move(7,5,5,3) 
+	// 	 << endl;
+
+	// cout << "Should be invalid Bishop move " << cb.board[7][5]->valid_move(7,5,0,2) 
+	// 	 << endl;
+
+	// cout << "Should be valid Bishop move " << cb.board[7][5]->valid_move(7,5,2,0) 
 	// 	 << endl;
 
 	// cout << "valid Knight move? " << cb.board[7][6]->valid_move(7,6,7,6) 

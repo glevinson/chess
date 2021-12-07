@@ -109,7 +109,7 @@ class Queen : public Piece{
 
 public:
  
-    bool valid_move(int start_col, int start_row, int dest_col, int dest_row) override{return true;};
+    bool valid_move(int start_col, int start_row, int dest_col, int dest_row) override;
 
     // Constructor
     Queen (char colour)
@@ -130,7 +130,7 @@ class King : public Piece{
 public:
 
     // char position[3];
-    bool valid_move(int start_col, int start_row, int dest_col, int dest_row) override{return true;};
+    bool valid_move(int start_col, int start_row, int dest_col, int dest_row) override;
 
     // Constructor
     King (char colour)
@@ -155,6 +155,8 @@ public:
     // Member Functions
 
     void submitMove(char source_square[], char distination_square[]);
+    void convert_to_index(char source_square[3], char destination_square[3],
+                          int source[2], int destination[2]);
     void load_board(Piece* board[8][8]);
 
     // Constructor
