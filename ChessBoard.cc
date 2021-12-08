@@ -1,6 +1,8 @@
 #include<iostream>
 #include<cstdlib>
+
 #include"ChessBoard.h"
+// #include"piece.h"
 
 using namespace std;
 
@@ -14,13 +16,27 @@ char Piece::get_colour(){
     return colour;
 }
 
+char Piece::get_piece_type(){
+    return piece_type;
+};
+
+bool Piece::legal_right(int start_col, int dest_col, int dest_row, Piece* board[8][8]){
+
+    for (int col = (start_col + 1); col < dest_col; col++){
+
+        if (board[dest_row][col] != NULL){
+                return false;
+        }
+    }
+}
+
 //************************************************************************
 
 // Castle Class Member Functions
 
 //************************************************************************
 
-bool Castle::valid_move(int start_col, int start_row, int dest_col, int dest_row){
+bool Castle::possible_move(int start_col, int start_row, int dest_col, int dest_row){
 // Q: dont have the override in the implementation?
 
     // Moving horizontally
@@ -33,8 +49,57 @@ bool Castle::valid_move(int start_col, int start_row, int dest_col, int dest_row
         return true;
     }
 
-    // No other moves are valid
+    // No other moves are possible
     return false;
+
+}
+
+bool Castle::legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]){
+
+    // Not taking own piece
+    if ( board[start_row][start_col]->colour == board[dest_row][dest_col]->colour ){
+        return false;
+    }
+
+    // Checking no pieces in path:
+
+    // When moving right
+    if ( start_row == dest_row && dest_col > start_col) {
+        return legal_right(start_col, dest_col, dest_row, board);
+    }
+
+     // When moving left
+    if ( start_row == dest_row && dest_col < start_col) {
+
+        for (int col = (start_col - 1); col > dest_col; col--){
+
+            if (board[dest_row][col] != NULL){
+                return false;
+            }
+        }
+    }
+
+    // When moving up
+    if ( start_col == dest_col && dest_row > start_row) {
+
+        for (int row = (start_row + 1); row < dest_row; row++){
+
+            if (board[row][dest_col] != NULL){
+                return false;
+            }
+        }
+    }
+
+     // When moving down
+    if ( start_col == dest_col && dest_row < start_row) {
+
+        for (int row = (start_row - 1); row > dest_row; row--){
+
+            if (board[row][dest_col] != NULL){
+                return false;
+            }
+        }
+    }
 
 }
 
@@ -44,7 +109,7 @@ bool Castle::valid_move(int start_col, int start_row, int dest_col, int dest_row
 
 //************************************************************************
 
-bool Knight::valid_move(int start_col, int start_row, int dest_col, int dest_row){
+bool Knight::possible_move(int start_col, int start_row, int dest_col, int dest_row){
 
     // Moving 2 spaces horizontally & 1 space vertically
     if (dest_row == start_row - 2 || dest_row == start_row + 2){
@@ -70,7 +135,7 @@ bool Knight::valid_move(int start_col, int start_row, int dest_col, int dest_row
 
 //************************************************************************
 
-bool Bishop::valid_move(int start_col, int start_row, int dest_col, int dest_row){
+bool Bishop::possible_move(int start_col, int start_row, int dest_col, int dest_row){
 
     // if move diagonally, the difference between start row & destination row should
     // equal the difference between start column & destination column
@@ -88,7 +153,7 @@ bool Bishop::valid_move(int start_col, int start_row, int dest_col, int dest_row
 
 //************************************************************************
 
-bool Queen::valid_move(int start_col, int start_row, int dest_col, int dest_row){
+bool Queen::possible_move(int start_col, int start_row, int dest_col, int dest_row){
 
     // Moving diagonally
     if ( abs(start_row - dest_row) == abs(start_col - dest_col) ){
@@ -115,7 +180,7 @@ bool Queen::valid_move(int start_col, int start_row, int dest_col, int dest_row)
 
 //************************************************************************
 
-bool King::valid_move(int start_col, int start_row, int dest_col, int dest_row){
+bool King::possible_move(int start_col, int start_row, int dest_col, int dest_row){
 
     // Moving 1 space horizontally
     if ( start_col == dest_col && abs(start_row - dest_row) == 1){
@@ -183,6 +248,25 @@ void ChessBoard::convert_to_index(char source_square[3], char destination_square
 
 }
 
+void ChessBoard::print_board(){
+
+cout << "\n     0  1  2  3  4  5  6  7 ";
+cout << "\n  * * * * * * * * * * * * *" << endl;
+    for(int i = 0; i<8; i++){
+        cout << i << " * ";
+        for(int j = 0; j<8; j++){
+            if (board[i][j] == nullptr){
+                cout << "//" << " ";
+            }
+            else{
+                cout <<board[i][j]->get_colour() << board[i][j]->get_piece_type() << " ";
+            }
+        }
+        cout << endl;
+    }
+    cout << endl << endl;
+}
+
 
 void ChessBoard::load_board(Piece* board[8][8]){
 
@@ -191,43 +275,43 @@ void ChessBoard::load_board(Piece* board[8][8]){
   for (int file = 0; file < 8; file++){
 
     // Pawns
-    board[1][file] = new Pawn('B');
+    board[1][file] = new Pawn('B', 'P');
 
-    board[7][file] = new Pawn('W');
+    board[6][file] = new Pawn('W', 'P');
 
     // Set unfilled positions to NULL
     for (int rank = 2; rank < 6; rank++){
-      board[rank][file] = NULL;
+      board[rank][file] = nullptr;
     }
   }
 
   // Castles
-  board[0][0] = new Castle('B');
-  board[0][7] = new Castle('B');
+  board[0][0] = new Castle('B', 'C');
+  board[0][7] = new Castle('B', 'C');
 
-  board[7][0] = new Castle('W');
-  board[7][7] = new Castle('W');
+  board[7][0] = new Castle('W', 'C');
+  board[7][7] = new Castle('W', 'C');
 
   // Knights
-  board[0][1] = new Knight('B');
-  board[0][6] = new Knight('B');
+  board[0][1] = new Knight('b', 'k');
+  board[0][6] = new Knight('b', 'k');
 
-  board[7][1] = new Knight('W');
-  board[7][6] = new Knight('W');
+  board[7][1] = new Knight('w', 'k');
+  board[7][6] = new Knight('w', 'k');
 
   // Bishops
-  board[0][2] = new Bishop('B');
-  board[0][5] = new Bishop('B');
+  board[0][2] = new Bishop('B', 'B');
+  board[0][5] = new Bishop('B', 'B');
 
-  board[7][2] = new Bishop('W');
-  board[7][5] = new Bishop('W');
+  board[7][2] = new Bishop('W', 'B');
+  board[7][5] = new Bishop('W', 'B');
 
   // Queens
-  board[0][3] = new Queen('B');
-  board[7][3] = new Queen('W');
+  board[0][3] = new Queen('B', 'Q');
+  board[7][3] = new Queen('W', 'Q');
 
   // Kings
-  board[0][4] = new King('B');
-  board[7][4] = new King('W');
+  board[0][4] = new King('B', 'K', 0, 4);
+  board[7][4] = new King('W', 'K', 7, 4);
 
 }
