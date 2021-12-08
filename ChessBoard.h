@@ -30,9 +30,18 @@ class Piece{
     char get_colour();
     char get_piece_type();
     virtual bool possible_move(int start_col, int start_row, int dest_col, int dest_row) = 0;
-    virtual bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) = 0;
+    virtual bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) = 0;
 
-    bool legal_right(int start_col, int dest_col, int dest_row, Piece* board[8][8]);
+    // WORKS
+    bool legal_right(int row, int start_col, int dest_col, Piece* board[8][8]);
+    // WORKS
+    bool legal_left(int row, int start_col, int dest_col, Piece* board[8][8]);
+    bool legal_up(int start_row, int dest_row, int col, Piece* board[8][8]);
+    bool legal_down(int start_row, int dest_row, int col, Piece* board[8][8]);
+
+    bool legal_right_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]);
+    bool legal_left_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]){
+
 
     // Constructor
     Piece (char colour, char piece_type)
@@ -52,7 +61,7 @@ class Pawn : public Piece{
   public:
 
     bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override {return true;};
-    bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) override {return true;};
+    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
 
     // Constructor
     Pawn (char colour, char piece_type)
@@ -70,7 +79,7 @@ class Castle : public Piece{
   public:
 
     bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) override;
+    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override;
 
     // Constructor
     Castle (char colour, char piece_type)
@@ -89,7 +98,7 @@ class Knight : public Piece{
   public:
  
     bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) override {return true;};
+    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
 
     // Constructor
     Knight (char colour, char piece_type)
@@ -110,7 +119,7 @@ class Bishop : public Piece{
   public:
 
     bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) override {return true;};
+    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
 
       // Constructor
       Bishop (char colour, char piece_type)
@@ -129,7 +138,7 @@ class Queen : public Piece{
 public:
  
     bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) override {return true;};
+    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
 
     // Constructor
     Queen (char colour, char piece_type)
@@ -151,7 +160,7 @@ public:
 
     int position[2];
     bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) override {return true;};
+    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
 
     // Constructor (N) Array initialiser list
     King (char colour, char piece_type, int starting_row, int starting_column)
@@ -182,8 +191,12 @@ public:
                           int source[2], int destination[2]);
     void load_board(Piece* board[8][8]);
 
+    // Delete out at the end !!!!
+    void load_test_board(Piece* board[8][8]);
+
     // Constructor
-    ChessBoard(){ load_board(board); };
+    // Change from loaed_test_board back
+    ChessBoard(){ load_test_board(board); };
 
 };
 

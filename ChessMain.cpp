@@ -1,4 +1,5 @@
 #include"ChessBoard.h"
+// #include"piece.h"
 #include<cstdlib>
 #include<iostream>
 
@@ -13,7 +14,15 @@ int main() {
 
 	ChessBoard cb = ChessBoard();
 
-	cb.submitMove("H3", "B2");
+	cb.print_board();
+
+	// cout << "legal? " << cb.board[5][1]->legal_right_up_diagonal(5,1,3,5,cb.board) << endl;
+
+
+	// UPCASTING MEANS CAN'T ACCESS POSITION
+	// cout << endl <<  "King starting position: " << cb.board[0][4]->position[0] << cb.board[0][4]->position[1] << endl;
+
+	// cb.submitMove("H3", "B2");
 
 	// Checking King moves ok:
 
