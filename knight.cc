@@ -2,8 +2,6 @@
 #include<cstdlib>
 
 #include"knight.h"
-#include"piece.h"
-#include"ChessBoard.h"
 
 using namespace std;
 
@@ -31,4 +29,21 @@ bool Knight::possible_move(int start_col, int start_row, int dest_col, int dest_
 
     // No other possible moves
     return false;
+}
+
+bool Knight::legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]){
+
+    // Not taking own piece
+    if ( board[dest_row][dest_col] != nullptr &&
+         board[start_row][start_col]->colour == board[dest_row][dest_col]->colour ){
+        return false;
+    }
+
+    // Can jump pieces
+    if ( possible_move(start_col, start_row, dest_col, dest_row) ){
+        return true;
+    }
+    else{
+        return false;
+    }
 }

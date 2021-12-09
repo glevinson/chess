@@ -1,40 +1,45 @@
-// #ifndef PIECE_H
-// #define PIECE_H
+#ifndef PIECE_H
+#define PIECE_H
 
-// #include"ChessBoard.h"
-// #include"pawn.h"
-// #include"castle.h"
-// #include"bishop.h"
-// #include"knight.h"
-// #include"king.h"
-// #include"queen.h"
+//************************************************************************
+// Piece Class
+//************************************************************************
 
-// //************************************************************************
-// // Piece Class Header File
-// //************************************************************************
+class Piece{
 
-// class Piece{
+  public:
 
-//   public:
+    // Data Mambers:
 
-//     // Data Mambers:
+    char colour;
+    char piece_type;
 
-//     char colour;
-//     char piece_type;
+    // Member Functions:
 
-//     // Member Functions:
+    char get_colour() const;
+    char get_piece_type() const;
+    virtual bool possible_move(int start_col, int start_row, int dest_col, int dest_row) = 0;
+    virtual bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) = 0;
 
-//     char get_colour() const;
-//     char get_piece_type() const;
-//     virtual bool possible_move(int start_col, int start_row, int dest_col, int dest_row) = 0;
-//     virtual bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) = 0;
+    // WORKS
+    bool legal_right(int row, int start_col, int dest_col, Piece* board[8][8]);
+    // WORKS
+    bool legal_left(int row, int start_col, int dest_col, Piece* board[8][8]);
+    bool legal_up(int start_row, int dest_row, int col, Piece* board[8][8]);
+    bool legal_down(int start_row, int dest_row, int col, Piece* board[8][8]);
 
-//     bool legal_right(int start_col, int dest_col, int dest_row, Piece* board[8][8]);
+    // will need to include: int steps = abs(dest_row-start_row);
+    bool legal_right_up_diagonal(int start_row, int start_col, int steps, Piece* board[8][8]);
+    bool legal_left_up_diagonal(int start_row, int start_col, int steps, Piece* board[8][8]);
+    bool legal_left_down_diagonal(int start_row, int start_col, int steps, Piece* board[8][8]);
+    bool legal_right_down_diagonal(int start_row, int start_col, int steps, Piece* board[8][8]);
 
-//     // Constructor
-//     Piece (char colour, char piece_type)
-//       : colour(colour),
-//           piece_type(piece_type){};
-// };
+    
 
-// #endif
+    // Constructor
+    Piece (char colour, char piece_type)
+      : colour(colour),
+          piece_type(piece_type){};
+};
+
+#endif

@@ -1,24 +1,25 @@
-// #ifndef PAWN_H
-// #define PAWN_H
+#ifndef PAWN_H
+#define PAWN_H
 
-// #include"piece.h"
-// #include"ChessBoard.h"
+#include"piece.h"
 
-// //************************************************************************
-// // Pawn Header File
-// //************************************************************************
+//************************************************************************
+
+// Pawn Class
+
+//************************************************************************
 
 
-// class Pawn : public Piece{
+class Pawn : public Piece{
 
-//   public:
+  public:
 
-//     bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override {return true;};
-//     bool legal_move(int start_col, int start_row, int dest_col, int dest_row, Piece* board[8][8]) override {return true;};
+    bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
+    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override;
 
-//     // Constructor
-//     Pawn (char colour, char piece_type)
-//       : Piece(colour, piece_type){};
-// };
+    // Constructor
+    Pawn (char colour, char piece_type)
+      : Piece(colour, piece_type){};
+};
 
-// #endif
+#endif

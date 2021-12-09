@@ -2,260 +2,14 @@
 #include<cstdlib>
 
 #include"ChessBoard.h"
-// #include"piece.h"
+#include"pawn.h"
+#include"castle.h"
+#include"bishop.h"
+#include"knight.h"
+#include"king.h"
+#include"queen.h"
 
 using namespace std;
-
-//************************************************************************
-
-// Piece Class Member Functions
-
-//************************************************************************
-
-char Piece::get_colour(){
-    return colour;
-}
-
-char Piece::get_piece_type(){
-    return piece_type;
-};
-
-bool Piece::legal_right(int row, int start_col, int dest_col, Piece* board[8][8]){
-
-    cout << endl <<  "hi" << endl;
-
-    for (int col = (start_col + 1); col < dest_col; col++){
-
-        if (board[row][col] != nullptr){
-            cout << "row " << row << " column " << col << " has a piece in it!" << endl;
-            return false;
-        }
-        cout << "row " << row << " column " << col << " doesn't have a piece in it!" << endl;
-    }
-    return true;
-}
-
-bool Piece::legal_left(int row, int start_col, int dest_col, Piece* board[8][8]){
-
-    for (int col = (start_col - 1); col > dest_col; col--){
-
-        if (board[row][col] != nullptr){
-                return false;
-        }
-    }
-    return true;
-}
-
-bool Piece::legal_up(int start_row, int dest_row, int col, Piece* board[8][8]){
-    for (int row = (start_row - 1); row > dest_row; row--){
-
-            if (board[row][col] != nullptr){
-                return false;
-            }
-    }
-    return true;
-}
-
-bool Piece::legal_down(int start_row, int dest_row, int col, Piece* board[8][8]){
-    for (int row = (start_row + 1); row < dest_row; row++){
-        
-            if (board[row][col] != nullptr){
-                cout << "row " << row << " column " << col << " has a piece in it!" << endl;
-                return false;
-            }
-        cout << "row " << row << " column " << col << " doesn't have a piece in it!" << endl;
-        }
-    return true;
-}
-
-bool Piece::legal_right_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]){
-    int steps = abs(dest_row-start_row);
-    cout << endl << "steps: " << steps << endl;
-
-    for (int n = 1; n < steps; n++){
-        // cout << "value of n: " << n << endl;
-        if (board[ (start_row-n) ][ (start_col+n) ] != nullptr){
-            cout << "row " << (start_row-n) << " column " << (start_col+n) << " has a piece in it!" << endl;
-            return false;
-        }
-        cout << "row " << (start_row-n) << " column " << (start_col+n) << " doesn't have a piece in it!" << endl;
-    }
-    return true;
-}
-
-bool Piece::legal_left_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]){
-    int steps = abs(dest_row-start_row);
-    // cout << endl << "steps: " << steps << endl;
-
-    for (int n = 1; n < steps; n++){
-        // cout << "value of n: " << n << endl;
-        if (board[ (start_row-n) ][ (start_col-n) ] != nullptr){
-            // cout << "row " << (start_row-n) << " column " << (start_col+n) << " has a piece in it!" << endl;
-            return false;
-        }
-        // cout << "row " << (start_row-n) << " column " << (start_col+n) << " doesn't have a piece in it!" << endl;
-    }
-    return true;
-}
-
-
-//************************************************************************
-
-// Castle Class Member Functions
-
-//************************************************************************
-
-bool Castle::possible_move(int start_col, int start_row, int dest_col, int dest_row){
-// Q: dont have the override in the implementation?
-
-    // Moving horizontally
-    if ( start_row == dest_row && start_col != dest_col ){
-        return true;
-    }
-
-    // Moving vertically
-    if ( start_col == dest_col && start_row != dest_row ){
-        return true;
-    }
-
-    // No other moves are possible
-    return false;
-
-}
-
-// WORKS
-bool Castle::legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]){
-
-    // Not taking own piece
-    if ( board[dest_row][dest_col] != nullptr &&
-         board[start_row][start_col]->colour == board[dest_row][dest_col]->colour ){
-        cout << endl << "landed on piece with same colour" << endl;
-        return false;
-    }
-
-    // Checking no pieces in path:
-
-    // When moving right
-    if ( start_row == dest_row && dest_col > start_col) {
-        cout << endl << "moving right!" << endl;
-        return legal_right(dest_row, start_col, dest_col, board);
-    }
-
-     // When moving left
-    if ( start_row == dest_row && dest_col < start_col) {
-        cout << endl << "moving left!" << endl;
-        return legal_left(start_col, dest_col, dest_row, board);
-    }
-
-    // When moving up
-    if ( start_col == dest_col && dest_row < start_row) {
-        cout << endl << "moving up!" << endl;
-        return legal_up(start_row, dest_row, dest_col, board);
-    }
-
-     // When moving down
-    if ( start_col == dest_col && dest_row > start_row) {
-        cout << endl << "moving down!" << endl;
-        return legal_down(start_row, dest_row, dest_col, board);
-    }
-    cout << endl << "Problem - not moving vertically or horizontally!" << endl;
-    // EVEN IF SHOULDNT REACH, MUST RETURN SOMETHING AS CURRENTLY UNDEFINED BERHAVIOUR
-    return false;
-}
-
-//************************************************************************
-
-// Knight Class Member Functions
-
-//************************************************************************
-
-bool Knight::possible_move(int start_col, int start_row, int dest_col, int dest_row){
-
-    // Moving 2 spaces horizontally & 1 space vertically
-    if (dest_row == start_row - 2 || dest_row == start_row + 2){
-        if (dest_col == start_col - 1 || dest_col == start_col + 1){
-            return true;
-        }
-    }
-    
-    // Moving 2 spaces vertically & 1 space horiztonally
-    if (dest_col == start_col - 2 || dest_col == start_col + 2){
-        if (dest_row == start_row - 1 || dest_row == start_row + 1){
-            return true;
-        }
-    }
-
-    // No other possible moves
-    return false;
-}
-
-//************************************************************************
-
-// Bishop Class Member Functions
-
-//************************************************************************
-
-bool Bishop::possible_move(int start_col, int start_row, int dest_col, int dest_row){
-
-    // if move diagonally, the difference between start row & destination row should
-    // equal the difference between start column & destination column
-    if ( abs(start_row - dest_row) == abs(start_col - dest_col) ){
-        return true;
-    }
-
-    // No other possible moves
-    return false;
-}
-
-//************************************************************************
-
-// Queen Class Member Functions
-
-//************************************************************************
-
-bool Queen::possible_move(int start_col, int start_row, int dest_col, int dest_row){
-
-    // Moving diagonally
-    if ( abs(start_row - dest_row) == abs(start_col - dest_col) ){
-        return true;
-    }
-
-    // Moving horizontally
-    if ( start_row == dest_row && start_col != dest_col ){
-        return true;
-    }
-
-    // Moving vertically
-    if ( start_col == dest_col && start_row != dest_row ){
-        return true;
-    }
-
-    // No other possible moves
-    return false;
-}
-
-//************************************************************************
-
-// King Class Member Functions
-
-//************************************************************************
-
-bool King::possible_move(int start_col, int start_row, int dest_col, int dest_row){
-
-    // Moving 1 space horizontally
-    if ( start_col == dest_col && abs(start_row - dest_row) == 1){
-        return true;
-    }
-
-    // Moving 1 space vertically
-    if ( start_row == dest_row && abs(start_col - dest_col) == 1){
-        return true;
-    }
-
-    // No other possible moves
-    return false;
-
-}
 
 //************************************************************************
 
@@ -327,6 +81,40 @@ cout << "\n  * * * * * * * * * * * * *" << endl;
     cout << endl;
 }
 
+bool ChessBoard::valid_move(int start_row, int start_col, int dest_row, int dest_col){
+
+    // Invalid if no piece at source square
+    if (board[start_row][start_col] == nullptr){
+        return false;
+    }
+
+    // King, (kings legal function must make sure it does not move into check)
+
+    // All other pieces
+    if ( board[start_row][start_col]->possible_move(start_col, start_row, dest_col, dest_row) && 
+         board[start_row][start_col]->legal_move(start_row, start_col, dest_row, dest_col, board)){
+
+             // if that puts own king in check, return false
+             // else return true
+
+        return true;
+    }
+
+    return false;
+}
+
+// iterates through the whole board and sees what pieces can hit the kings ciurrent location
+bool ChessBoard::check(int king_pos[2]){
+    for (int i = 0; i < 8 ; i++){
+        for (int j = 0; j < 8; j ++){
+            if ( valid_move(i, j, king_pos[0], king_pos[1]) ){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 
 // void ChessBoard::load_board(Piece* board[8][8]){
 
@@ -353,11 +141,11 @@ cout << "\n  * * * * * * * * * * * * *" << endl;
 //   board[7][7] = new Castle('W', 'C');
 
 //   // Knights
-//   board[0][1] = new Knight('b', 'k');
-//   board[0][6] = new Knight('b', 'k');
+//   board[0][1] = new Knight('B', 'ḵ');
+//   board[0][6] = new Knight('B', 'ḵ');
 
-//   board[7][1] = new Knight('w', 'k');
-//   board[7][6] = new Knight('w', 'k');
+//   board[7][1] = new Knight('W', 'ḵ');
+//   board[7][6] = new Knight('W', 'ḵ');
 
 //   // Bishops
 //   board[0][2] = new Bishop('B', 'B');
@@ -383,9 +171,8 @@ void ChessBoard::load_test_board(Piece* board[8][8]){
   for (int file = 0; file < 8; file++){
 
     // Pawns
-    board[1][file] = new Pawn('B', 'P');
-
-    board[6][file] = new Pawn('W', 'P');
+    board[1][file] = nullptr;
+    board[6][file] = nullptr;
 
     // Set unfilled positions to NULL
     for (int rank = 2; rank < 6; rank++){
@@ -401,26 +188,42 @@ void ChessBoard::load_test_board(Piece* board[8][8]){
   board[7][7] = new Castle('W', 'C');
 
   // Knights
-  board[0][1] = new Knight('b', 'k');
-  board[0][6] = nullptr;
+  board[0][1] = new Knight('B', 'c');
+  board[0][6] = new Knight('B', 'c');
 
-  board[7][1] = new Knight('w', 'k');
-  board[7][6] = new Knight('w', 'k');
+  board[7][1] = new Knight('W', 'c');
+  board[7][6] = new Knight('W', 'c');
 
   // Bishops
   board[0][2] = new Bishop('B', 'B');
   board[0][5] = new Bishop('B', 'B');
 
-  board[4][1] = new Bishop('W', 'B');
   board[7][2] = new Bishop('W', 'B');
   board[7][5] = new Bishop('W', 'B');
 
   // Queens
   board[0][3] = new Queen('B', 'Q');
   board[7][3] = new Queen('W', 'Q');
+  board[5][2] = new Queen('B', 'Q');
 
   // Kings
   board[0][4] = new King('B', 'K', 0, 4);
-  board[7][4] = new King('W', 'K', 7, 4);
+  board[5][5] = new King('W', 'K', 7, 4);
+
+  board[1][7] = new Pawn('B', 'P');
+  board[5][3] = new Pawn('B', 'P');
+  board[1][3] = new Pawn('B', 'P');
+//   board[4][5] = new Knight('B', 'c');
+
+  board[7][4] = nullptr;
+
+  board[4][5] = new Pawn('B', 'P');
+  board[4][6] = new Queen('W', 'P');
+  board[5][6] = new Bishop('B', 'P');
+  board[6][6] = new Knight('W', 'P');
+  board[6][5] = new Pawn('W', 'P');
+  board[5][4] = new Bishop('B', 'P');
+  board[6][4] = new Knight('B', 'P');
+  board[4][4] = new Pawn('W', 'P');
 
 }

@@ -14,7 +14,30 @@ int main() {
 
 	ChessBoard cb = ChessBoard();
 
+
 	cb.print_board();
+
+	// cout << endl << cb.W_king_pos[0] << cb.W_king_pos[1] << endl;
+
+	// cout << endl << "Is the white king in check: " << cb.check(cb.W_king_pos) << endl;
+
+	// cout << endl << cb.B_king_pos[0] << cb.B_king_pos[1] << endl;
+	// cout << endl << cb.W_king_pos[0] << cb.W_king_pos[1] << endl;
+
+	
+
+	// This maps the legal move of a piece on the board (atm WQ [3,3])
+	cout << "\n    0 1 2 3 4 5 6 7 ";
+	cout << "\n  * * * * * * * * *" << endl;
+	for (int i=0; i<8; i++){
+		cout << i << " * ";
+		for(int j = 0; j<8; j++){
+			// cout << cb.board[6][3]->possible_move(3, 6 ,j , i) << " ";
+			cout << cb.valid_move(5, 5 ,i , j) << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
 
 	// cout << "legal? " << cb.board[5][1]->legal_right_up_diagonal(5,1,3,5,cb.board) << endl;
 

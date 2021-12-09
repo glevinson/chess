@@ -1,9 +1,7 @@
 #include<iostream>
 #include<cstdlib>
 
-#include"piece.h"
 #include"castle.h"
-#include"ChessBoard.h
 
 using namespace std;
 
@@ -31,10 +29,12 @@ bool Castle::possible_move(int start_col, int start_row, int dest_col, int dest_
 
 }
 
-bool Castle::legal_move(int start_col, int start_row, int dest_col, int dest_row, ChessBoard* cb){
+bool Castle::legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]){
 
     // Not taking own piece
-    if ( cb->board[start_row][start_col]->colour == cb->board[dest_row][dest_col]->colour ){
+    if ( board[dest_row][dest_col] != nullptr &&
+         board[start_row][start_col]->colour == board[dest_row][dest_col]->colour ){
+        // cout << endl << "landed on piece with same colour" << endl;
         return false;
     }
 
@@ -42,40 +42,28 @@ bool Castle::legal_move(int start_col, int start_row, int dest_col, int dest_row
 
     // When moving right
     if ( start_row == dest_row && dest_col > start_col) {
-        return legal_right(start_col, dest_col, dest_row, cb );
+        // cout << endl << "moving right!" << endl;
+        return legal_right(dest_row, start_col, dest_col, board);
     }
 
      // When moving left
     if ( start_row == dest_row && dest_col < start_col) {
-
-        for (int col = (start_col - 1); col > dest_col; col--){
-
-            if (cb->board[dest_row][col] != NULL){
-                return false;
-            }
-        }
+        // cout << endl << "moving left!" << endl;
+        return legal_left(start_col, dest_col, dest_row, board);
     }
 
     // When moving up
-    if ( start_col == dest_col && dest_row > start_row) {
-
-        for (int row = (start_row + 1); row < dest_row; row++){
-
-            if (cb->board[row][dest_col] != NULL){
-                return false;
-            }
-        }
+    if ( start_col == dest_col && dest_row < start_row) {
+        // cout << endl << "moving up!" << endl;
+        return legal_up(start_row, dest_row, dest_col, board);
     }
 
      // When moving down
-    if ( start_col == dest_col && dest_row < start_row) {
-
-        for (int row = (start_row - 1); row > dest_row; row--){
-
-            if (cb->board[row][dest_col] != NULL){
-                return false;
-            }
-        }
+    if ( start_col == dest_col && dest_row > start_row) {
+        // cout << endl << "moving down!" << endl;
+        return legal_down(start_row, dest_row, dest_col, board);
     }
-
+    cout << endl << "Problem - not moving vertically or horizontally!" << endl;
+    // EVEN IF SHOULDNT REACH, MUST RETURN SOMETHING AS CURRENTLY UNDEFINED BERHAVIOUR
+    return false;
 }

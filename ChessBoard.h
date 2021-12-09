@@ -1,173 +1,20 @@
 #ifndef CHESSBOARD_H
 #define CHESSBOARD_H
 
-// #include"piece.h"
-// #include"pawn.h"
-// #include"castle.h"
-// #include"bishop.h"
-// #include"knight.h"
-// #include"king.h"
-// #include"queen.h"
+#include"piece.h"
 
 
-//************************************************************************
+// IN HEADER ONLY INCLUDE PIECE, SO ONLY INCLUDE PIECE
+// WHEN OTHER PEOPLE USE YOUR LIBRARY, IF THEY USE THE HEADER ONLY & CONTAINS INCLUDES FOR EVEYTHING
+// YOU NEEDED OVERALL. SLOWS DOWN COMPILATION FOR EVERYONE EVEN IF JUST USING YOUR HEADER FILE
+// AND NOT NECCESSARILY MORE OF THE CODE
 
-// Piece Class
+// HEADER FILE: ONLY INCLUDE HEADERS FOR CLASSES REFERRED TO IN HEADER
+// IMPLEMENTATION: USE WHATEVER USED THERE
+// EVERY CC FILE COMPILED SEPARATELY TO HEADER
+// LINKING PHASE, SOURCE FILE FROM ONE BIT LINKED BACK TO OTHER FILES
 
-//************************************************************************
-
-class Piece{
-
-  public:
-
-    // Data Mambers:
-
-    char colour;
-    char piece_type;
-
-    // Member Functions:
-
-    char get_colour();
-    char get_piece_type();
-    virtual bool possible_move(int start_col, int start_row, int dest_col, int dest_row) = 0;
-    virtual bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) = 0;
-
-    // WORKS
-    bool legal_right(int row, int start_col, int dest_col, Piece* board[8][8]);
-    // WORKS
-    bool legal_left(int row, int start_col, int dest_col, Piece* board[8][8]);
-    bool legal_up(int start_row, int dest_row, int col, Piece* board[8][8]);
-    bool legal_down(int start_row, int dest_row, int col, Piece* board[8][8]);
-
-    bool legal_right_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]);
-    bool legal_left_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]);
-
-
-    // Constructor
-    Piece (char colour, char piece_type)
-      : colour(colour),
-          piece_type(piece_type){};
-};
-
-//************************************************************************
-
-// Pawn Class
-
-//************************************************************************
-
-
-class Pawn : public Piece{
-
-  public:
-
-    bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override {return true;};
-    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
-
-    // Constructor
-    Pawn (char colour, char piece_type)
-      : Piece(colour, piece_type){};
-};
-
-//************************************************************************
-
-// Castle Class
-
-//************************************************************************
-
-class Castle : public Piece{
-
-  public:
-
-    bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override;
-
-    // Constructor
-    Castle (char colour, char piece_type)
-      : Piece(colour, piece_type){};
-
-};
-
-//************************************************************************
-
-// Knight Class
-
-//************************************************************************
-
-class Knight : public Piece{
-
-  public:
- 
-    bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
-
-    // Constructor
-    Knight (char colour, char piece_type)
-      : Piece(colour, piece_type){};
-
-};
-
-
-//************************************************************************
-
-// Bishop Class
-
-//************************************************************************
-
-
-class Bishop : public Piece{
-
-  public:
-
-    bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
-
-      // Constructor
-      Bishop (char colour, char piece_type)
-        : Piece(colour, piece_type){};
-
-};
-
-//************************************************************************
-
-// Queen Class
-
-//************************************************************************
-
-class Queen : public Piece{
-
-public:
- 
-    bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
-
-    // Constructor
-    Queen (char colour, char piece_type)
-      : Piece(colour, piece_type){};
-
-};
-
-
-//************************************************************************
-
-// King Class
-
-//************************************************************************
-
-
-class King : public Piece{
-
-public:
-
-    int position[2];
-    bool possible_move(int start_col, int start_row, int dest_col, int dest_row) override;
-    bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) override {return true;};
-
-    // Constructor (N) Array initialiser list
-    King (char colour, char piece_type, int starting_row, int starting_column)
-      : Piece(colour, piece_type),
-          position{starting_row, starting_column}{};
-
-};
+// cpp files compiled, header files only compiled because they're in cpp files
 
 // ************************************************************************
 
@@ -182,6 +29,8 @@ public:
     // Data Members:
 
     Piece* board[8][8];
+    int B_king_pos[2];
+    int W_king_pos[2];
 
     // Member Functions
 
@@ -191,12 +40,21 @@ public:
                           int source[2], int destination[2]);
     void load_board(Piece* board[8][8]);
 
+    bool valid_move(int start_row, int start_col, int dest_row, int dest_col);
+
     // Delete out at the end !!!!
     void load_test_board(Piece* board[8][8]);
 
+    bool check(int king_pos[2]);
+
     // Constructor
     // Change from loaed_test_board back
-    ChessBoard(){ load_test_board(board); };
+    ChessBoard()
+        : B_king_pos{0, 4},
+            W_king_pos{5, 7} // SHOULD BE 7,4
+    { load_test_board(board); };
+
+    // Get Piece name is gonna be neccessary
 
 };
 
