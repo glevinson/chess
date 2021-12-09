@@ -94,8 +94,16 @@ bool ChessBoard::valid_move(int start_row, int start_col, int dest_row, int dest
     if ( board[start_row][start_col]->possible_move(start_col, start_row, dest_col, dest_row) && 
          board[start_row][start_col]->legal_move(start_row, start_col, dest_row, dest_col, board)){
 
-             // if that puts own king in check, return false
-             // else return true
+            //  if (board[start_row][start_col]->colour == 'B' && check(B_king_pos)){
+            //      return false;
+            //  }
+
+            // if (board[start_row][start_col]->colour == 'B' && check(B_king_pos)){
+            //      return false;
+            //  }
+
+            //  // if that puts own king in check, return false
+            //  // else return true
 
         return true;
     }
@@ -107,8 +115,11 @@ bool ChessBoard::valid_move(int start_row, int start_col, int dest_row, int dest
 bool ChessBoard::check(int king_pos[2]){
     for (int i = 0; i < 8 ; i++){
         for (int j = 0; j < 8; j ++){
-            if ( valid_move(i, j, king_pos[0], king_pos[1]) ){
+            // Only checking opposition pieces
+            if ( board[i][j] != nullptr && board[i][j]->colour != board[king_pos[0]][king_pos[1]]->colour){
+                if ( valid_move(i, j, king_pos[0], king_pos[1]) ){
                 return true;
+                }
             }
         }
     }
@@ -224,6 +235,6 @@ void ChessBoard::load_test_board(Piece* board[8][8]){
   board[6][5] = new Pawn('W', 'P');
   board[5][4] = new Bishop('B', 'P');
   board[6][4] = new Knight('B', 'P');
-  board[4][4] = new Pawn('W', 'P');
+  board[4][4] = new Pawn('B', 'P');
 
 }

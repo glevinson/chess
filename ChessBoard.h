@@ -51,7 +51,7 @@ public:
     // Change from loaed_test_board back
     ChessBoard()
         : B_king_pos{0, 4},
-            W_king_pos{5, 7} // SHOULD BE 7,4
+            W_king_pos{5, 5} // SHOULD BE 7,4
     { load_test_board(board); };
 
     // Get Piece name is gonna be neccessary

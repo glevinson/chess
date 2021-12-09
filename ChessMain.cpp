@@ -19,7 +19,7 @@ int main() {
 
 	// cout << endl << cb.W_king_pos[0] << cb.W_king_pos[1] << endl;
 
-	// cout << endl << "Is the white king in check: " << cb.check(cb.W_king_pos) << endl;
+	cout << endl << "Is the white king in check: " << cb.check(cb.W_king_pos) << endl;
 
 	// cout << endl << cb.B_king_pos[0] << cb.B_king_pos[1] << endl;
 	// cout << endl << cb.W_king_pos[0] << cb.W_king_pos[1] << endl;

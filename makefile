@@ -32,4 +32,4 @@ king.o: king.cc king.h
 	g++ -Wall -g -c king.cc
 
 clean:
-	rm -f *.o main
+	rm -f *.o chess
