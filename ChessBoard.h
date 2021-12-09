@@ -40,7 +40,7 @@ class Piece{
     bool legal_down(int start_row, int dest_row, int col, Piece* board[8][8]);
 
     bool legal_right_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]);
-    bool legal_left_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]){
+    bool legal_left_up_diagonal(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]);
 
 
     // Constructor

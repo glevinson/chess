@@ -144,7 +144,7 @@ bool Castle::legal_move(int start_row, int start_col, int dest_row, int dest_col
      // When moving left
     if ( start_row == dest_row && dest_col < start_col) {
         cout << endl << "moving left!" << endl;
-        return legal_right(start_col, dest_col, dest_row, board);
+        return legal_left(start_col, dest_col, dest_row, board);
     }
 
     // When moving up
@@ -159,6 +159,8 @@ bool Castle::legal_move(int start_row, int start_col, int dest_row, int dest_col
         return legal_down(start_row, dest_row, dest_col, board);
     }
     cout << endl << "Problem - not moving vertically or horizontally!" << endl;
+    // EVEN IF SHOULDNT REACH, MUST RETURN SOMETHING AS CURRENTLY UNDEFINED BERHAVIOUR
+    return false;
 }
 
 //************************************************************************
@@ -184,10 +186,7 @@ bool Knight::possible_move(int start_col, int start_row, int dest_col, int dest_
     }
 
     // No other possible moves
-    return false;// Not taking own piece
-    // if ( board[start_row][start_col]->colour == board[dest_row][dest_col]->colour ){
-    //     return false;
-    // }
+    return false;
 }
 
 //************************************************************************
