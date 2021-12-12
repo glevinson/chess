@@ -31,6 +31,8 @@ public:
     Piece* board[8][8];
     int B_king_pos[2];
     int W_king_pos[2];
+    int king_position[2];
+    int turn_count;
 
     // Member Functions
 
@@ -40,18 +42,23 @@ public:
                           int source[2], int destination[2]);
     void load_board(Piece* board[8][8]);
 
+    bool adjacent_squares_check(int king_row, int king_col, int turn_count);
     bool valid_move(int start_row, int start_col, int dest_row, int dest_col);
+
+    void move_piece(int start_row, int start_col, int dest_row, int dest_col);
 
     // Delete out at the end !!!!
     void load_test_board(Piece* board[8][8]);
 
-    bool check(int king_pos[2]);
+    bool check(int king_row, int king_col, int turn_count);
 
     // Constructor
     // Change from loaed_test_board back
     ChessBoard()
         : B_king_pos{0, 4},
-            W_king_pos{5, 5} // SHOULD BE 7,4
+            W_king_pos{7, 4},
+                king_position{-1,-1},
+                    turn_count(0)
     { load_test_board(board); };
 
     // Get Piece name is gonna be neccessary

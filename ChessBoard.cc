@@ -40,6 +40,8 @@ void ChessBoard::convert_to_index(char source_square[3], char destination_square
 
     // Converts postion from (column,row) to (row, column) making it compatible with our board:
 
+    // int turn_count = 0 // AFTER EACH ALLOWED MOVE, INCREMEMNT BY 1 AND MODULUS RESULT BY 2
+
     char inverted_source_square[2], inverted_destination_square[2];
 
     inverted_source_square[0] = source_square[1];
@@ -83,6 +85,11 @@ cout << "\n  * * * * * * * * * * * * *" << endl;
 
 bool ChessBoard::valid_move(int start_row, int start_col, int dest_row, int dest_col){
 
+    // Invalid if moving to same square
+    if ( start_row == dest_row && start_col == dest_col ){
+        return false;
+    }
+
     // Invalid if no piece at source square
     if (board[start_row][start_col] == nullptr){
         return false;
@@ -112,12 +119,31 @@ bool ChessBoard::valid_move(int start_row, int start_col, int dest_row, int dest
 }
 
 // iterates through the whole board and sees what pieces can hit the kings ciurrent location
-bool ChessBoard::check(int king_pos[2]){
+bool ChessBoard::check(int king_row, int king_col, int turn_count){
+
+    char user_colour;
+    char opponent_colour;
+
+    // i.e. if white turn
+    if (turn_count == 0){
+        user_colour = 'W';
+        opponent_colour = 'B';
+    }
+
+    // i.e. if black turn
+    else{
+        user_colour = 'B';
+        opponent_colour = 'W';
+    }
+
     for (int i = 0; i < 8 ; i++){
         for (int j = 0; j < 8; j ++){
-            // Only checking opposition pieces
-            if ( board[i][j] != nullptr && board[i][j]->colour != board[king_pos[0]][king_pos[1]]->colour){
-                if ( valid_move(i, j, king_pos[0], king_pos[1]) ){
+            // Checking all pieces (legal moves prevents piece taking own colour)
+            // user needs to be told if they're king in check or check mate, i.e. whether opponents moves can hit it
+            // checking whether opponents piece can hit users king
+            if ( board[i][j] != nullptr  && board[i][j]->colour == opponent_colour ){ // THIS MIGHT LEAD TO ERRORS DEPENDING ON HOW USE CHECK 
+                cout << endl << "position: " << i << " " << j << " has a piece of colour: " << opponent_colour << endl; 
+                if ( valid_move(i, j, king_row, king_col) ){
                 return true;
                 }
             }
@@ -126,6 +152,196 @@ bool ChessBoard::check(int king_pos[2]){
     return false;
 }
 
+// If there is an adjacent square to the king that is not in check, return false
+bool ChessBoard::adjacent_squares_check(int king_row, int king_col, int turn_count){
+
+    // Space above
+    if ( king_row != 0 ){
+        
+        // Space above
+        // If the space above is not in check, 
+        // then the king has a space to move to if in check
+        // so adjacent squares are not all in check, i.e. return false
+        if ( valid_move(king_row, king_col, king_row - 1, king_col)){
+
+            cout << endl << "Valid move above...";
+            cout << endl << "to row: " << (king_row-1) << " column: " << king_col << endl << endl;
+
+            move_piece(king_row, king_col, king_row - 1, king_col);
+            // move is valid, now must temporarily update board accordingly before running check 
+            // on this would be square
+            // so we need a function that updates the position
+            // and another function that returns it to the original state
+
+            print_board();
+
+            if ( !check( king_row - 1, king_col, turn_count ) ){
+            cout << endl <<  "Not in check..." << endl;
+            return false;
+            }
+        }
+    }
+
+     // space above diagonally to left
+    if ( king_row != 0 || king_col != 0 ){ 
+
+        if ( valid_move(king_row, king_col, king_row - 1, king_col -1 ) ){
+        
+            move_piece(king_row, king_col, king_row - 1, king_col - 1);
+
+            if( !check( king_row - 1, king_col - 1, turn_count ) ){
+            cout << endl << "can move above diagonally left!" << endl;
+            return false;
+             }
+        }
+    }
+
+    // space above diagonally to right
+    if ( king_row != 0 || king_col != 7 ){
+
+        if ( valid_move(king_row, king_col, king_row - 1, king_col + 1) ){ 
+            
+            move_piece(king_row, king_col, king_row - 1, king_col + 1);
+            
+            if (!check( king_row - 1, king_col + 1, turn_count) ){
+            cout << endl << "can move above diagonally right!" << endl;
+            return false;
+            }
+        }
+    }
+
+    // space to left
+    if ( king_col != 0 ){
+
+        if ( valid_move(king_row, king_col, king_row, king_col - 1) ){
+            
+            move_piece(king_row, king_col, king_row, king_col - 1);
+            
+            if ( !check( king_row, king_col - 1, turn_count) ){
+            cout << endl << "can move left!" << endl;
+            return false;
+            }
+        }
+    }
+
+    // space to right
+    if ( king_col != 7 ){
+        cout << endl << "king col not equal to 7" << endl;
+        if ( valid_move(king_row, king_col, king_row, king_col + 1) ){
+
+            move_piece(king_row, king_col, king_row, king_col + 1);
+
+            cout << endl << "move is valid..." << endl;
+            cout << "neighbour row " << king_row << " & column " << (king_col+1);
+            if ( !check( king_row, king_col + 1, turn_count) == false ){
+            cout << endl << "can move right!" << endl;
+            return false;
+            }
+        }
+    }
+
+    // space below diagonally to left
+    if ( king_row != 7 || king_col != 0 ){
+
+        if ( valid_move(king_row, king_col, king_row + 1, king_col - 1) ){
+
+            move_piece(king_row, king_col, king_row + 1, king_col - 1);
+
+            if ( !check( king_row + 1, king_col - 1, turn_count ) ){
+            cout << endl << "can down diagonally left!" << endl;
+            return false;
+            }
+        }
+    }
+
+    // space below diagonally to right
+    if ( king_row != 7 || king_col != 7 ){
+
+        if ( valid_move(king_row, king_col, king_row + 1, king_col + 1) ){
+            
+            move_piece(king_row, king_col, king_row + 1, king_col + 1);
+
+            if ( !check( king_row + 1, king_col + 1, turn_count ) ){
+                cout << endl << "can move down diagonally right!" << endl;
+                return false;
+            }
+        }
+    }
+
+    // space below
+    if ( king_row != 7 ){
+        
+        if ( valid_move(king_row, king_col, king_row + 1, king_col) ){
+            
+            
+            if ( !check( king_row + 1, king_col, turn_count) ){
+                cout << endl << "can move below!" << endl;
+                return false;
+            }
+        }
+    }
+
+    // If all adjacent squares in check
+    cout << endl << endl << "we can conclude that all adjacent squares to the king are in check!" << endl;
+    return true;
+}
+
+void ChessBoard::move_piece(int start_row, int start_col, int dest_row, int dest_col){
+
+    char piece_type = board[start_row][start_col]->get_piece_type();
+    char colour = board[start_row][start_col]->get_colour();
+
+    board[start_row][start_col] = nullptr;
+
+    // Pawns
+    if ( colour == 'B' && piece_type == 'P'){
+        board[dest_row][dest_col] = new Pawn(colour, piece_type);
+    }
+    if ( colour == 'W' && piece_type == 'P'){
+        board[dest_row][dest_col] = new Pawn(colour, piece_type);
+    }
+
+    // Castles
+    if ( colour == 'B' && piece_type == 'C'){
+        board[dest_row][dest_col] = new Castle(colour, piece_type);
+    }
+    if ( colour == 'W' && piece_type == 'C'){
+        board[dest_row][dest_col] = new Castle(colour, piece_type);
+    }
+
+    // Knights
+    if ( colour == 'B' && piece_type == 'c'){
+        board[dest_row][dest_col] = new Knight(colour, piece_type);
+    }
+    if ( colour == 'W' && piece_type == 'c'){
+        board[dest_row][dest_col] = new Knight(colour, piece_type);
+    }
+
+    // Bishops
+    if ( colour == 'B' && piece_type == 'B'){
+        board[dest_row][dest_col] = new Bishop(colour, piece_type);
+    }
+    if ( colour == 'W' && piece_type == 'B'){
+        board[dest_row][dest_col] = new Bishop(colour, piece_type);
+    }
+
+    // Queens 
+    if ( colour == 'B' && piece_type == 'Q'){
+        board[dest_row][dest_col] = new Queen(colour, piece_type);
+    }
+    if ( colour == 'W' && piece_type == 'Q'){
+        board[dest_row][dest_col] = new Queen(colour, piece_type);
+    }
+
+    // Kings
+    if ( colour == 'B' && piece_type == 'K'){
+        board[dest_row][dest_col] = new King(colour, piece_type);
+    }
+    if ( colour == 'W' && piece_type == 'K'){
+        board[dest_row][dest_col] = new King(colour, piece_type);
+    }
+
+}
 
 // void ChessBoard::load_board(Piece* board[8][8]){
 
@@ -152,11 +368,11 @@ bool ChessBoard::check(int king_pos[2]){
 //   board[7][7] = new Castle('W', 'C');
 
 //   // Knights
-//   board[0][1] = new Knight('B', 'ḵ');
-//   board[0][6] = new Knight('B', 'ḵ');
+//   board[0][1] = new Knight('B', 'c');
+//   board[0][6] = new Knight('B', 'c');
 
-//   board[7][1] = new Knight('W', 'ḵ');
-//   board[7][6] = new Knight('W', 'ḵ');
+//   board[7][1] = new Knight('W', 'c');
+//   board[7][6] = new Knight('W', 'c');
 
 //   // Bishops
 //   board[0][2] = new Bishop('B', 'B');
@@ -170,8 +386,8 @@ bool ChessBoard::check(int king_pos[2]){
 //   board[7][3] = new Queen('W', 'Q');
 
 //   // Kings
-//   board[0][4] = new King('B', 'K', 0, 4);
-//   board[7][4] = new King('W', 'K', 7, 4);
+//   board[0][4] = new King('B', 'K');
+//   board[7][4] = new King('W', 'K');
 
 // }
 
@@ -183,6 +399,7 @@ void ChessBoard::load_test_board(Piece* board[8][8]){
 
     // Pawns
     board[1][file] = nullptr;
+
     board[6][file] = nullptr;
 
     // Set unfilled positions to NULL
@@ -215,26 +432,19 @@ void ChessBoard::load_test_board(Piece* board[8][8]){
   // Queens
   board[0][3] = new Queen('B', 'Q');
   board[7][3] = new Queen('W', 'Q');
-  board[5][2] = new Queen('B', 'Q');
 
   // Kings
-  board[0][4] = new King('B', 'K', 0, 4);
-  board[5][5] = new King('W', 'K', 7, 4);
+  board[0][4] = new King('B', 'K');
+  board[7][4] = new King('W', 'K');
+  board[3][3] = new King('W', 'K');
 
-  board[1][7] = new Pawn('B', 'P');
-  board[5][3] = new Pawn('B', 'P');
-  board[1][3] = new Pawn('B', 'P');
-//   board[4][5] = new Knight('B', 'c');
-
-  board[7][4] = nullptr;
-
-  board[4][5] = new Pawn('B', 'P');
-  board[4][6] = new Queen('W', 'P');
-  board[5][6] = new Bishop('B', 'P');
-  board[6][6] = new Knight('W', 'P');
-  board[6][5] = new Pawn('W', 'P');
-  board[5][4] = new Bishop('B', 'P');
-  board[6][4] = new Knight('B', 'P');
+  board[2][2] = new Pawn('B', 'P');
+  board[2][3] = nullptr;
+  board[2][4] = new Pawn('B', 'P');
+  board[3][2] = new Pawn('B', 'P');
+  board[3][4] = new Pawn('B', 'P');
+  board[4][2] = new Pawn('B', 'P');
+  board[4][3] = new Pawn('B', 'P');
   board[4][4] = new Pawn('B', 'P');
 
 }
