@@ -31,7 +31,13 @@ public:
     Piece* board[8][8];
     int B_king_pos[2];
     int W_king_pos[2];
-    int king_position[2];
+    int user_king_pos[2];
+    int opponent_king_pos[2];
+    int threat_position[2];
+    // position of piece that can block
+    int blocking_piece_position[2];
+    // position that blocks
+    int blocking_position[2];
     int turn_count;
 
     // Member Functions
@@ -43,23 +49,32 @@ public:
     void load_board(Piece* board[8][8]);
 
     bool adjacent_squares_check(int king_row, int king_col, int turn_count);
+    bool can_king_move( int king_row, int king_col, int dest_row, int dest_col, int turn_count);
     bool valid_move(int start_row, int start_col, int dest_row, int dest_col);
 
+    void insert_piece(int dest_row, int dest_col, char colour, char piece_type);
     void move_piece(int start_row, int start_col, int dest_row, int dest_col);
 
-    // Delete out at the end !!!!
-    void load_test_board(Piece* board[8][8]);
-
     bool check(int king_row, int king_col, int turn_count);
+    bool can_block( int king_row, int king_col, int threat_row, int threat_col, int turn_count);
+    bool can_block_space( int row, int col, int turn_count);
+    bool check_mate( int king_row, int king_col, int turn_count);
+
+    void print_piece_type(char piece_type);
+    void print_piece_colour(int turn_count);
 
     // Constructor
     // Change from loaed_test_board back
     ChessBoard()
         : B_king_pos{0, 4},
             W_king_pos{7, 4},
-                king_position{-1,-1},
-                    turn_count(0)
-    { load_test_board(board); };
+                user_king_pos{7,4},
+                    threat_position{-1,-1},
+                        blocking_piece_position{-1,-1},
+                            blocking_position{-1,-1},
+                                opponent_king_pos{0,4},
+                                    turn_count(0)
+    { load_board(board); };
 
     // Get Piece name is gonna be neccessary
 
