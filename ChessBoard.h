@@ -2,6 +2,7 @@
 #define CHESSBOARD_H
 
 #include"piece.h"
+#include<string>
 
 
 // IN HEADER ONLY INCLUDE PIECE, SO ONLY INCLUDE PIECE
@@ -42,11 +43,14 @@ public:
 
     // Member Functions
 
+    bool wrong_turn( int start_row, int start_col, int turn_count );
+
     void print_board();
     void submitMove(char source_square[], char distination_square[]);
     void convert_to_index(char source_square[3], char destination_square[3],
                           int source[2], int destination[2]);
     void load_board(Piece* board[8][8]);
+    void resetBoard();
 
     bool adjacent_squares_check(int king_row, int king_col, int turn_count);
     bool can_king_move( int king_row, int king_col, int dest_row, int dest_col, int turn_count);
@@ -60,8 +64,8 @@ public:
     bool can_block_space( int row, int col, int turn_count);
     bool check_mate( int king_row, int king_col, int turn_count);
 
-    void print_piece_type(char piece_type);
-    void print_piece_colour(int turn_count);
+    std::string print_piece_type(char piece_type);
+    std::string print_piece_colour(int turn_count);
 
     // Constructor
     // Change from loaed_test_board back
@@ -69,11 +73,11 @@ public:
         : B_king_pos{0, 4},
             W_king_pos{7, 4},
                 user_king_pos{7,4},
-                    threat_position{-1,-1},
-                        blocking_piece_position{-1,-1},
-                            blocking_position{-1,-1},
-                                opponent_king_pos{0,4},
-                                    turn_count(0)
+                    opponent_king_pos{0,4},
+                        threat_position{-1,-1},
+                            blocking_piece_position{-1,-1},
+                                blocking_position{-1,-1},
+                                        turn_count(0)
     { load_board(board); };
 
     // Get Piece name is gonna be neccessary
