@@ -2,7 +2,7 @@
 
 #include<iostream>
 
-using std::cout;
+using namespace std;
 
 int main() {
 
@@ -12,6 +12,16 @@ int main() {
 
 	ChessBoard cb;
 	cout << '\n';
+
+	// cb.turn_count = 1;
+
+	// cb.print_board();
+
+	// cout << endl << endl;
+	// cout << cb.can_king_move(0,0,7,7,0);
+	// cout << endl << endl;
+
+	cb.submitMove("H1", "G1");
 
 	cb.submitMove("D7", "D6");
 	cout << '\n';

@@ -55,13 +55,6 @@ bool King::legal_move(int start_row, int start_col, int dest_row, int dest_col, 
          board[start_row][start_col]->colour == board[dest_row][dest_col]->colour ){
         return false;
     }
-
-    // Can jump pieces
-    if ( possible_move(start_col, start_row, dest_col, dest_row) ){
-        return true;
-    }
-    else{
-        return false;
-    }
-
+    
+    return true;
 }

@@ -19,9 +19,20 @@ using namespace std;
 
 
 // how make sure they finish in 
-void ChessBoard::submitMove(char source_square[3], char destination_square[3]){
+// how make sure they finish in 
+void ChessBoard::submitMove(string source_square_str, string destination_square_str){
 // entering a string above should automatically include the sentinel
 // Which marks the end of a string
+
+    char source_square[3], destination_square[3];
+
+    source_square[0] = source_square_str[0];
+    source_square[1] = source_square_str[1];
+    source_square[2] = '\0';
+
+    destination_square[0] = destination_square_str[0];
+    destination_square[1] = destination_square_str[1];
+    destination_square[2] = '\0';
 
     // turn_count = 0 (white) & turn_count = 1 (black)
     if (turn_count == 0){
@@ -59,6 +70,9 @@ void ChessBoard::submitMove(char source_square[3], char destination_square[3]){
         return;
     }
 
+    // must add possibility of stalemate
+    // must 
+
     if ( valid_move( source[0], source[1], destination[0], destination[1] ) ){
         cout << endl << print_piece_colour(turn_count) << "'s " 
             << print_piece_type(board[source[0]][source[1]]->get_piece_type());
@@ -70,9 +84,11 @@ void ChessBoard::submitMove(char source_square[3], char destination_square[3]){
         }
         move_piece( source[0], source[1], destination[0], destination[1] );
 
-         // if user's king in check
+         // cannot do move if leaves users king in check & replace the piece if has to
+         // this check will also change the threatening pieces, so need to reset them
         if ( check(user_king_pos[0], user_king_pos[1], turn_count)){
             cout << endl << "User's king is in check, invalid move" << endl;
+            // insert piece lost if required
             move_piece( destination[0], destination[1], source[0], source[1] );
             return;
         }
@@ -251,6 +267,43 @@ bool ChessBoard::check(int king_row, int king_col, int turn_count){
         }
     }
     return false;
+}
+
+bool ChessBoard::stalemate( int turn_count ){
+
+    char user_colour;
+
+    if ( turn_count == 0 ){
+        user_colour = 'W';
+    } 
+
+    else{
+        user_colour = 'B';
+    }
+
+    cout << endl << "colours allocated" << endl;
+    // Iterating through the finding every user's piece
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if ( board[i][j] != nullptr && board[i][j]->get_colour() == user_colour ){
+                cout << endl << "checking piece corresponding to turn: " << turn_count << " at position " << i << j << endl;
+                // Checks if there is any square on the board that piece at (i,j) can move to
+                for (int n = 0; n < 8; n++){
+                    for (int m = 0; m < 8; m++){
+                        if (valid_move(i,j,n,m) && i != n && j != m){ 
+                            if ( board[i][j]->get_piece_type() == 'K' ){  // king cannot move into check !!
+
+                            }
+                            cout << endl << "valid move to " << i << j << endl;
+                            return false;
+                        }
+                    }
+                }
+                cout << endl << "no valid moves..." << endl;
+            }
+        }
+    }
+    return true;
 }
 
 bool ChessBoard::check_mate( int king_row, int king_col, int turn_count ){
@@ -673,6 +726,31 @@ void ChessBoard::load_board(Piece* board[8][8]){
   board[7][4] = new King('W', 'K');
 
 }
+
+// void ChessBoard::load_board(Piece* board[8][8]){
+
+//   cout << "A new chess game is started!";
+
+//   // Bottom white, Top black
+
+//   for (int file = 0; file < 8; file++){
+
+//     // Pawns
+//     board[1][file] = nullptr;
+
+//     board[6][file] = nullptr;
+
+//     // Set unfilled positions to NULL
+//     for (int rank = 0; rank < 8; rank++){
+//       board[rank][file] = nullptr;
+//     }
+//   }
+
+//   board[0][0] = new King('W', 'K');
+//   board[6][5] = new Queen('W', 'Q');
+//   board[7][7] = new King('B', 'K');
+  
+// }
 
 // TESTS
 
