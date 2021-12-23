@@ -11,6 +11,7 @@ int main() {
 	cout << "========================\n\n";
 
 	ChessBoard cb;
+
 	cout << '\n';
 
 	cb.submitMove("D7", "D6");

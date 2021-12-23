@@ -100,8 +100,13 @@ void ChessBoard::submitMove(string source_square_str,
                 board[destination[0]][destination[1]]->get_piece_type());
         }
 
-        // Do the move
+
+        // Do the move & if King moving update position accordingly
         move_piece( source[0], source[1], destination[0], destination[1] );
+         if ( board[destination[0]][destination[1]]->get_piece_type() == 'K' ){
+            user_king_pos[0] = destination[0];
+            user_king_pos[1] = destination[1];
+        }
 
         // Undo move if results in user's king being in check & notifies user
         if ( check(user_king_pos[0], user_king_pos[1], get_turn_count())){
@@ -110,7 +115,11 @@ void ChessBoard::submitMove(string source_square_str,
             if ( empty_destination == false ){
                 insert_piece( destination[0], destination[1], opponent_colour, opponent_piece );
             }
-            return; // check this works
+            if ( board[source[0]][source[1]]->get_piece_type() == 'K' ){
+                user_king_pos[0] = source[0];
+                user_king_pos[1] = source[1];
+            }
+            return;
         }
 
     }
@@ -122,23 +131,30 @@ void ChessBoard::submitMove(string source_square_str,
         return;
     }
 
-     alternate_turn_count(turn_count);
+    // Alternate turn_count
+    alternate_turn_count(turn_count);
 
     // Check if opposition in check-mate
     if ( check_mate( opponent_king_pos[0], opponent_king_pos[1], get_turn_count() )){
         return;
     }
 
-    // Check if opposition in check
+    // Check if the opposition in check
     if ( check( opponent_king_pos[0], opponent_king_pos[1], get_turn_count() ) ){
-
         cout << endl << print_piece_colour(get_turn_count()) << " is in check";
     }
 
-    // need check-mate after here for the appropriate turn-count
+    // Alternate user & opponent king positions
+     int temp_x = opponent_king_pos[0];
+     int temp_y = opponent_king_pos[1];
+
+     opponent_king_pos[0] = user_king_pos[0];
+     opponent_king_pos[1] = user_king_pos[1];
+
+     user_king_pos[0] = temp_x;
+     user_king_pos[1] = temp_y;
 }
 
-// Converts postion from (column,row) to (row, column) making it compatible with our board:
 void ChessBoard::convert_to_index(char source_square[3], char destination_square[3], int source[2], int destination[2]){
 
     char inverted_source_square[2], inverted_destination_square[2];
@@ -242,7 +258,6 @@ bool ChessBoard::valid_move(int start_row, int start_col, int dest_row, int dest
     return false;
 }
 
-// iterates through the whole board and sees what pieces can hit the kings ciurrent location
 bool ChessBoard::check(int king_row, int king_col, int turn_count){
 
     char opponent_colour;
@@ -257,13 +272,13 @@ bool ChessBoard::check(int king_row, int king_col, int turn_count){
         opponent_colour = 'W';
     }
 
+    // Iterates through board finding any opposition pieces can 'capture' 
+    // the user's king
     for (int i = 0; i < 8 ; i++){
         for (int j = 0; j < 8; j++){
-            // Checking all pieces (legal moves prevents piece taking own colour)
-            // user needs to be told if they're king in check or check mate, i.e. whether opponents moves can hit it
-            // checking whether opponents piece can hit users king
             if ( board[i][j] != nullptr  && board[i][j]->get_colour() == opponent_colour ){
                 if ( valid_move(i, j, king_row, king_col) ){
+                    // Threat position updated to threatening opposition piece position
                     threat_position[0] = i;
                     threat_position[1] = j;
                     return true;
@@ -293,9 +308,11 @@ bool ChessBoard::stalemate( int turn_count ){
                 // Checks if there is any square on the board that piece at (i,j) can move to
                 for (int n = 0; n < 8; n++){
                     for (int m = 0; m < 8; m++){
-                        if ( board[i][j]->get_piece_type() == 'K' && can_king_move(i,j,n,m,turn_count) ){  // king cannot move into check !!
+                        // King cannot move into check
+                        if ( board[i][j]->get_piece_type() == 'K' && can_king_move(i,j,n,m,turn_count) ){
                             return false;
                         }
+                        // Not stalemate if a valid move exists
                         if ( board[i][j]->get_piece_type() != 'K' && valid_move(i,j,n,m) && i != n && j != m){ 
                             return false;
                         }
@@ -304,8 +321,11 @@ bool ChessBoard::stalemate( int turn_count ){
             }
         }
     }
+    // If no valid move possible, the user is in stalemate
     return true;
 }
+
+// GOT TO HERE !!
 
 bool ChessBoard::check_mate( int king_row, int king_col, int turn_count ){
 
@@ -675,6 +695,12 @@ void ChessBoard::move_piece(int start_row, int start_col, int dest_row, int dest
 void ChessBoard::resetBoard(){
     turn_count = 0;
     load_board(board);
+
+    user_king_pos[0] = 7;
+    user_king_pos[1] = 4;
+
+    opponent_king_pos[0] = 0;
+    opponent_king_pos[1] = 4;
 }
 
 void ChessBoard::load_board(Piece* board[8][8]){

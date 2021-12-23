@@ -25,7 +25,7 @@
 
 class ChessBoard{
 
-private:
+public:
 
     Piece* board[8][8];
     // If turn_count = 0 it is white's turn, if turn_count = 1 it is Black's:
@@ -46,7 +46,7 @@ private:
     void load_board(Piece* board[8][8]);
     // Returns false if move White piece when Black's turn & vice-versa:
     bool wrong_turn( int start_row, int start_col, int turn_count );
-    // Converts character board position to indices:
+    // Converts postion from (column,row) characters to (row, column) index
     void convert_to_index(char source_square[3], char destination_square[3],
                           int source[2], int destination[2]);
     // Returns true if the specified piece can move to the specified destination:
