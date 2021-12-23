@@ -1,8 +1,7 @@
 #include<iostream>
 #include<cstdlib>
 
-#include"queen.h" // queen.h includes piece.h so by including queen.h here, you have piece header too
-// includes just paste the contents of file including into top of this file
+#include"queen.h"
 
 using namespace std;
 

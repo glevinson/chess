@@ -4,19 +4,6 @@
 #include"piece.h"
 #include<string>
 
-
-// IN HEADER ONLY INCLUDE PIECE, SO ONLY INCLUDE PIECE
-// WHEN OTHER PEOPLE USE YOUR LIBRARY, IF THEY USE THE HEADER ONLY & CONTAINS INCLUDES FOR EVEYTHING
-// YOU NEEDED OVERALL. SLOWS DOWN COMPILATION FOR EVERYONE EVEN IF JUST USING YOUR HEADER FILE
-// AND NOT NECCESSARILY MORE OF THE CODE
-
-// HEADER FILE: ONLY INCLUDE HEADERS FOR CLASSES REFERRED TO IN HEADER
-// IMPLEMENTATION: USE WHATEVER USED THERE
-// EVERY CC FILE COMPILED SEPARATELY TO HEADER
-// LINKING PHASE, SOURCE FILE FROM ONE BIT LINKED BACK TO OTHER FILES
-
-// cpp files compiled, header files only compiled because they're in cpp files
-
 // ****************************************************************************
 
 // ChessBoard Class (Bottom white, Top black)
@@ -75,7 +62,7 @@ public:
     bool can_king_move( int king_row, int king_col, int dest_row, int dest_col,
                         int turn_count);
 
-    // Returns true if all specified Kings possible moves results in a check:
+    // Returns true if all specified King's possible moves result in a check:
     bool adjacent_squares_check(int king_row, int king_col, int turn_count);
 
     /* Returns true if the threatening piece putting the specified King in 
@@ -97,7 +84,6 @@ public:
 // Getter Functions
 // ****************************************************************************
 
-    void print_board(); // DELETE @ end ! 
     std::string print_piece_type(char piece_type);
     std::string print_piece_colour(int turn_count);
     int get_turn_count() const;

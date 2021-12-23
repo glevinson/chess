@@ -101,7 +101,7 @@ void ChessBoard::submitMove(string source_square_str,
         }
 
 
-        // Do the move & if King moving update position accordingly
+        // Do the move & if piece moving is a King update position accordingly
         move_piece( source[0], source[1], destination[0], destination[1] );
          if ( board[destination[0]][destination[1]]->get_piece_type() == 'K' ){
             user_king_pos[0] = destination[0];
@@ -115,6 +115,8 @@ void ChessBoard::submitMove(string source_square_str,
             if ( empty_destination == false ){
                 insert_piece( destination[0], destination[1], opponent_colour, opponent_piece );
             }
+
+            // If piece moved was a king, updating its position accordingly
             if ( board[source[0]][source[1]]->get_piece_type() == 'K' ){
                 user_king_pos[0] = source[0];
                 user_king_pos[1] = source[1];
@@ -172,26 +174,6 @@ void ChessBoard::convert_to_index(char source_square[3], char destination_square
     // Converts file (left to right) from A-Z to 0-7:
     source[1] = inverted_source_square[1] - 'A';
     destination[1] = inverted_destination_square[1] - 'A';
-}
-
-void ChessBoard::print_board(){
-
-cout << "\n       0  1  2  3  4  5  6  7 ";
-cout << "\n       A  B  C  D  E  F  G  H ";
-cout << "\n   * * * * * * * * * * * * *" << endl;
-    for(int i = 0; i<8; i++){
-        cout << i << " " << (8-i) << " * ";
-        for(int j = 0; j<8; j++){
-            if (board[i][j] == nullptr){
-                cout << "//" << " ";
-            }
-            else{
-                cout <<board[i][j]->get_colour() << board[i][j]->get_piece_type() << " ";
-            }
-        }
-        cout << endl;
-    }
-    cout << endl;
 }
 
 string ChessBoard::print_piece_type(char piece_type){
@@ -272,8 +254,8 @@ bool ChessBoard::check(int king_row, int king_col, int turn_count){
         opponent_colour = 'W';
     }
 
-    // Iterates through board finding any opposition pieces can 'capture' 
-    // the user's king
+    /* Iterates through board finding any opposition pieces can 'capture' 
+       the user's king */
     for (int i = 0; i < 8 ; i++){
         for (int j = 0; j < 8; j++){
             if ( board[i][j] != nullptr  && board[i][j]->get_colour() == opponent_colour ){
@@ -325,12 +307,14 @@ bool ChessBoard::stalemate( int turn_count ){
     return true;
 }
 
-// GOT TO HERE !!
 
 bool ChessBoard::check_mate( int king_row, int king_col, int turn_count ){
 
     char opponent_colour, threat_piece;
     int threat_position[2];
+
+     // True if it is possible to take opposition piece that puts user King in check
+    bool can_capture_threat = false;
 
     if (turn_count == 0){
         opponent_colour = 'B';
@@ -340,14 +324,17 @@ bool ChessBoard::check_mate( int king_row, int king_col, int turn_count ){
         opponent_colour = 'W';
     }
 
-    // print_board();
-
+//************************************************
     // King must be in check to be in check-mate
+//************************************************
+
     if ( !check(king_row, king_col, turn_count) ){
         return false;
     }
 
-    // Can king move into adjacent square without being in check
+//***********************************************************
+// Can king move into adjacent square without being in check
+//***********************************************************
     if ( !adjacent_squares_check(king_row, king_col, turn_count) ){
         return false;
     }
@@ -357,25 +344,30 @@ bool ChessBoard::check_mate( int king_row, int king_col, int turn_count ){
     threat_position[1] = this->threat_position[1];
     threat_piece = board[ threat_position[0] ][ threat_position[1] ]->get_piece_type();
 
-    bool can_capture_threat = false;
+//******************************************
+// Can piece threatening the king be taken:
+//******************************************
 
-    // Can piece threatening the king be taken
+    /* Iterates through whole board to see if there is a user piece that can take 
+       the oppositions threatening piece */
+
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             if ( board[i][j] != nullptr && board[i][j]->get_piece_type() != 'K' && valid_move( i, j, this->threat_position[0], this->threat_position[1]) ){
                 can_capture_threat = true;
                  // temporarily move piece
                 move_piece( i, j, this->threat_position[0], this->threat_position[1] );
-                if ( check( king_row, king_col, turn_count ) ){ // if king can't move, a piece that puts it in check is removed & king still in check => check mate
+                // checkmate if check still after a threatening piece is taken
+                if ( check( king_row, king_col, turn_count ) ){ 
                     return true;
                 }
-                // undo move
+                // undo move:
+
                 this->threat_position[0] = threat_position[0];
                 this->threat_position[1] = threat_position[1];
-                
+        
                 move_piece ( this->threat_position[0], this->threat_position[1], i, j);
                 insert_piece( this->threat_position[0], this->threat_position[1], opponent_colour, threat_piece);
-                // print_board();
             }
 
             if (can_capture_threat == true){
@@ -390,40 +382,46 @@ bool ChessBoard::check_mate( int king_row, int king_col, int turn_count ){
 
     }
 
-// If valid block or take, need to take or block, check if it is still in check, then undo the move
+//****************************************************************
+// If threatening piece is a knight check-mate after above 2 tests
+//****************************************************************
 
-    // If threatening piece is a knight, check-mate after above 2 tests
     if (board[threat_position[0]][threat_position[1]]->get_piece_type() == 'c'){
-        return true; // (CHECK) !!!!
+        return true;
     } 
 
-    // Can threatening piece be blocked
+//***********************************
+// Can threatening piece be blocked:
+//***********************************
+
     if ( can_block( king_row, king_col, threat_position[0], threat_position[1], turn_count) ){
         
-        // checking still in check after blocking piece
+        // Test if still in check after block
         move_piece(blocking_piece_position[0], blocking_piece_position[1], blocking_position[0], blocking_position[1]);
     
         if ( !check( king_row, king_col, turn_count) ){
+            // Undo move if not in check
             move_piece(blocking_position[0], blocking_position[1], blocking_piece_position[0], blocking_piece_position[1]);
             return false;
         }
 
-        // blocking still results in check, i.e. check-mate
+        // check-mate if king still in check after threatening piece blocked
         return true;
     }
 
-    // check-mate if King in check, opponent piece being taken doesnt affect checkmate & there is no blocking possible
+    // check-mate if King still in check after above tests
     cout << endl << print_piece_colour(turn_count) << " is in checkmate" << endl;
     return true;
 }
 
 
-
-// Checks if can block the path of a threatening piece
 bool ChessBoard::can_block( int king_row, int king_col, int threat_row, int threat_col, int turn_count){
     
     int row_diff = abs(king_row - threat_row);
     int col_diff = abs(king_col - threat_col);
+
+    /* Iterates through the spaces inbetween the threatening piece and the king in check & tests 
+       if any pieces corresponding to the king's colour can validally move to one of the spaces */
 
     // Horizontal and at least two squares away (so there is space to block)
     if ( row_diff == 0 && col_diff > 1 ){
@@ -517,7 +515,6 @@ bool ChessBoard::can_block( int king_row, int king_col, int threat_row, int thre
     return false;
 }
 
-// will want to see if same colour as the king can block a space
 bool ChessBoard::can_block_space( int row, int col, int turn_count){
 
     char blocking_colour;
@@ -529,6 +526,9 @@ bool ChessBoard::can_block_space( int row, int col, int turn_count){
     if (turn_count == 1){
         blocking_colour = 'B';
     }
+
+    /* Iterates through whole board, returning true if it finds a piece of the same colour 
+       as the current turns king that could move to the square "(row, col)" */
 
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
@@ -544,14 +544,13 @@ bool ChessBoard::can_block_space( int row, int col, int turn_count){
     return false;
 }
 
-// WORKS
-// returns true if king can move to a space without being in check
 bool ChessBoard::can_king_move( int king_row, int king_col, int dest_row, int dest_col, int turn_count){
 
     char opponent_colour, opponent_piece;
+    // True if destination square is empty
     bool space_empty = false;
 
-    // As the checks below will distort the check positions
+    // Saving the threat positions as moving the King below will distort them
     int threat_position[2];
     threat_position[0] = this->threat_position[0];
     threat_position[1] = this->threat_position[1];
@@ -584,6 +583,7 @@ bool ChessBoard::can_king_move( int king_row, int king_col, int dest_row, int de
             if (space_empty == false){
                 insert_piece(dest_row, dest_col, opponent_colour, opponent_piece );
             }
+            // Update threat position to orignal values
             this->threat_position[0] = threat_position[0];
             this->threat_position[1] = threat_position[1];
 
@@ -595,16 +595,17 @@ bool ChessBoard::can_king_move( int king_row, int king_col, int dest_row, int de
                 insert_piece(dest_row, dest_col, opponent_colour, opponent_piece );
             }
     }
+    // Update threat position to orignal values
     this->threat_position[0] = threat_position[0];
     this->threat_position[1] = threat_position[1];
     return false;
 }
 
-// If king can move to adjacent square without being in check, then not all adjacent
-// squares to the king are in check
-// WORKS
 bool ChessBoard::adjacent_squares_check(int king_row, int king_col, int turn_count){
     
+    /* If there is an adjacent square to the King that it can move to without being in check,
+       then not all the squares adjacent to the King are in check; function returns false */
+
     // Space above
     if ( king_row != 0 && can_king_move(king_row, king_col, king_row - 1, king_col, turn_count) ){
         return false;
@@ -716,7 +717,7 @@ void ChessBoard::load_board(Piece* board[8][8]){
 
     board[6][file] = new Pawn('W', 'P');
 
-    // Set unfilled positions to NULL
+    // Set unfilled squares to NULL
     for (int rank = 2; rank < 6; rank++){
       board[rank][file] = nullptr;
     }
