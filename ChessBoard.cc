@@ -26,17 +26,16 @@ void ChessBoard::alternate_turn_count( int turn_count ){
     this->turn_count = ( turn_count + 1 )%2;
 }
 
-// how make sure they finish in 
-// how make sure they finish in 
-void ChessBoard::submitMove(string source_square_str, string destination_square_str){
-// entering a string above should automatically include the sentinel
-// Which marks the end of a string
+void ChessBoard::submitMove(string source_square_str, 
+                            string destination_square_str){
 
+    // True if destination square is empty
     bool empty_destination = true;
     char source_square[3], destination_square[3];
     char opponent_colour;
     char opponent_piece;
 
+    // Converting source & destination square strings to character arrays
     source_square[0] = source_square_str[0];
     source_square[1] = source_square_str[1];
     source_square[2] = '\0';
@@ -45,7 +44,7 @@ void ChessBoard::submitMove(string source_square_str, string destination_square_
     destination_square[1] = destination_square_str[1];
     destination_square[2] = '\0';
 
-    // turn_count = 0 (white) & turn_count = 1 (black)
+    // COULD CHANGE THIS !
     if (get_turn_count() == 0){
         opponent_colour = 'B';
     }
@@ -54,47 +53,56 @@ void ChessBoard::submitMove(string source_square_str, string destination_square_
         opponent_colour = 'W';
     }
 
-// Convert board positions to index:
-
+    // Convert board positions to index:
     int source[2], destination[2];
     convert_to_index(source_square, destination_square, source, destination);
 
-     // Check actually moving a piece
+     // Test if moving a piece
      if ( board[source[0]][source[1]] == nullptr ){
         cout << "There is no piece at position " << source_square[0] 
              << source_square[1] << "!" ;
         return;
     }
 
-     // Check if moving wrong colour
+     // Test if piece moving is the right colour
     if ( wrong_turn(source[0], source[1], get_turn_count()) ){
-        cout << endl << "It is not " << print_piece_colour( (get_turn_count()+1)%2 ) 
+        cout << endl << "It is not " << print_piece_colour( (get_turn_count()+1)%2 )
              << "'s turn to move" << endl;
         return;
     }
 
-    // must add possibility of stalemate
-    if ( stalemate( get_turn_count() ) && !check( user_king_pos[0], user_king_pos[1], get_turn_count() ) ){
-        // board[ destination[0] ][ destination[1] ]
+    // Test if in stalemate
+    if ( stalemate( get_turn_count() ) && !check( user_king_pos[0], 
+         user_king_pos[1], get_turn_count() ) ){
         cout << endl << "Game over due to stalemate" << endl;
         return;
     }
 
     if ( valid_move( source[0], source[1], destination[0], destination[1] ) ){
+
+        // Outputting the move to screen
         cout << endl << print_piece_colour(get_turn_count()) << "'s " 
             << print_piece_type(board[source[0]][source[1]]->get_piece_type());
-        cout << " moves from " << source_square[0] << source_square[1] << " to " 
-             << destination_square[0] << destination_square[1];
+
+        cout << " moves from " << source_square[0] << source_square[1] 
+             << " to " << destination_square[0] << destination_square[1];
+
+        // If taking a piece, outputting that information to screen
         if ( board[ destination[0] ][ destination[1] ] != nullptr ){
+
             empty_destination = false;
-            opponent_piece = board[ destination[0] ][ destination[1] ]->get_piece_type();
-            cout << " taking " << print_piece_colour( (get_turn_count()+1)%2 ) << "'s " ;
+            opponent_piece = 
+            board[ destination[0] ][ destination[1] ]->get_piece_type();
+
+            cout << " taking " << print_piece_colour( (get_turn_count()+1)%2 ) 
+                 << "'s " ;
             cout << print_piece_type( board[ destination[0] ][ destination[1] ]->get_piece_type());
         }
+
+        // Do the move
         move_piece( source[0], source[1], destination[0], destination[1] );
 
-         // cannot do move if leaves users king in check & replace the piece if has to
-         // this check will also change the threatening pieces, so need to reset them
+        // Undoes move if results in user's king being in check & notifies user
         if ( check(user_king_pos[0], user_king_pos[1], get_turn_count())){
             cout << endl << "User's king is in check, invalid move" << endl;
             move_piece( destination[0], destination[1], source[0], source[1] );

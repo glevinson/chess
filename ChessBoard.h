@@ -103,12 +103,12 @@ public:
     int get_turn_count() const;
 
     ChessBoard()
-        :   user_king_pos{7,4},
-                opponent_king_pos{0,4},
-                    threat_position{-1,-1},
-                        blocking_piece_position{-1,-1},
-                            blocking_position{-1,-1},
-                                    turn_count(0)
+        :   turn_count(0),
+                user_king_pos{7,4},
+                    opponent_king_pos{0,4},
+                        threat_position{-1,-1},
+                            blocking_piece_position{-1,-1},
+                                blocking_position{-1,-1}
     { load_board(board); };
 
 };
