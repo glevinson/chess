@@ -4,8 +4,8 @@
 chess: ChessMain.o ChessBoard.o pawn.o castle.o bishop.o knight.o queen.o king.o piece.o
 	g++ -g -Wall -o chess ChessMain.o ChessBoard.o pawn.o castle.o bishop.o knight.o queen.o king.o piece.o
 
-piece.o: piece.cc piece.h
-	g++ -Wall -g -c piece.cc
+piece.o: piece.cpp piece.h
+	g++ -Wall -g -c piece.cpp
 
 ChessMain.o: ChessMain.cpp ChessBoard.h
 	g++ -Wall -g -c ChessMain.cpp
@@ -13,23 +13,23 @@ ChessMain.o: ChessMain.cpp ChessBoard.h
 ChessBoard.o: ChessBoard.cpp ChessBoard.h
 	g++ -Wall -g -c ChessBoard.cpp
 
-pawn.o: pawn.cc pawn.h
-	g++ -Wall -g -c pawn.cc
+pawn.o: pawn.cpp pawn.h
+	g++ -Wall -g -c pawn.cpp
 
-castle.o: castle.cc castle.h
-	g++ -Wall -g -c castle.cc
+castle.o: castle.cpp castle.h
+	g++ -Wall -g -c castle.cpp
 
-bishop.o: bishop.cc bishop.h
-	g++ -Wall -g -c bishop.cc
+bishop.o: bishop.cpp bishop.h
+	g++ -Wall -g -c bishop.cpp
 
-knight.o: knight.cc knight.h
-	g++ -Wall -g -c knight.cc
+knight.o: knight.cpp knight.h
+	g++ -Wall -g -c knight.cpp
 
-queen.o: queen.cc queen.h
-	g++ -Wall -g -c queen.cc
+queen.o: queen.cpp queen.h
+	g++ -Wall -g -c queen.cpp
 
-king.o: king.cc king.h
-	g++ -Wall -g -c king.cc
+king.o: king.cpp king.h
+	g++ -Wall -g -c king.cpp
 
 clean:
 	rm -f *.o chess
