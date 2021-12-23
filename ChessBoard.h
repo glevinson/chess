@@ -17,42 +17,38 @@
 
 // cpp files compiled, header files only compiled because they're in cpp files
 
-// ************************************************************************
+// ****************************************************************************
 
 // ChessBoard Class (Bottom white, Top black)
 
-// ************************************************************************
+// ****************************************************************************
 
 class ChessBoard{
 
 private:
 
     Piece* board[8][8];
+    // If turn_count = 0 it is white's turn, if turn_count = 1 it is Black's:
+    int turn_count;
     // Player with turn's king position:
     int user_king_pos[2];
     // Player without turn's king position:
     int opponent_king_pos[2];
     // Position of piece that has a king in check:
     int threat_position[2];
-    // Position of piece that can block a piece putting current turn's King in check:
+    /* Position of piece that can block a piece putting current turn's
+       King in check: */
     int blocking_piece_position[2];
-    // Position that the blocking piece will move to:
+    // Position that the blocking piece would move to:
     int blocking_position[2];
-    // If turn_count = 0 it is white's turn, if turn_count = 1 it is Black's:
-    int turn_count;
 
-
+    // Loads beginning of match board setup:
+    void load_board(Piece* board[8][8]);
     // Returns false if move White piece when Black's turn & vice-versa:
     bool wrong_turn( int start_row, int start_col, int turn_count );
     // Converts character board position to indices:
     void convert_to_index(char source_square[3], char destination_square[3],
                           int source[2], int destination[2]);
-    // Loads beginning of match board setup:
-    void load_board(Piece* board[8][8]);
-    // Returns true if all a Kings possible moves results in a check:
-    bool adjacent_squares_check(int king_row, int king_col, int turn_count);
-    // Returns true if specified King can move to specified square without being in check:
-    bool can_king_move( int king_row, int king_col, int dest_row, int dest_col, int turn_count);
     // Returns true if the specified piece can move to the specified destination:
     bool valid_move(int start_row, int start_col, int dest_row, int dest_col);
     // Inserts the specified piece into the specified square:
@@ -60,28 +56,47 @@ private:
     // Moves piece at start square to destination square
     void move_piece(int start_row, int start_col, int dest_row, int dest_col);
 
-    // Check(-mate) functions:
-
-    // Returns true if currents turn's King in check-mate
-    bool check_mate( int king_row, int king_col, int turn_count);
-    // Returns true if current turn's King in check
-    bool check(int king_row, int king_col, int turn_count);
-    // Returns true if the threatening piece putting the specified King in check can be blocked
-    bool can_block( int king_row, int king_col, int threat_row, int threat_col, int turn_count);
-    // Returns true if a piece in the specified space would block check:
-    bool can_block_space( int row, int col, int turn_count);
- 
 
     // Returns true if current turn's in stalemate
     bool stalemate( int turn_count );
 
+// ****************************************************************************
+// Check(-mate) functions
+// ****************************************************************************
+
+    // Returns true if current turn's King in check
+    bool check(int king_row, int king_col, int turn_count);
+
+    // Returns true if currents turn's King in check-mate
+    bool check_mate( int king_row, int king_col, int turn_count);
+
+    /* Returns true if specified King can move to specified square without 
+       being in check: */
+    bool can_king_move( int king_row, int king_col, int dest_row, int dest_col,
+                        int turn_count);
+
+    // Returns true if all specified Kings possible moves results in a check:
+    bool adjacent_squares_check(int king_row, int king_col, int turn_count);
+
+    /* Returns true if the threatening piece putting the specified King in 
+       check can be blocked: */
+    bool can_block( int king_row, int king_col, int threat_row, int threat_col,
+                    int turn_count);
+
+    // Returns true if a piece in the specified space would block check:
+    bool can_block_space( int row, int col, int turn_count);
+
 public:
 
-    void submitMove(std::string source_square_str, std::string destination_square_str);
+    void submitMove(std::string source_square_str, 
+                    std::string destination_square_str);
     void resetBoard();
     void alternate_turn_count(int turn_count);
 
-    // Getter functions:
+// ****************************************************************************
+// Getter Functions
+// ****************************************************************************
+
     void print_board(); // DELETE @ end ! 
     std::string print_piece_type(char piece_type);
     std::string print_piece_colour(int turn_count);
