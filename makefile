@@ -10,8 +10,8 @@ piece.o: piece.cc piece.h
 ChessMain.o: ChessMain.cpp ChessBoard.h
 	g++ -Wall -g -c ChessMain.cpp
 
-ChessBoard.o: ChessBoard.cc ChessBoard.h
-	g++ -Wall -g -c ChessBoard.cc
+ChessBoard.o: ChessBoard.cpp ChessBoard.h
+	g++ -Wall -g -c ChessBoard.cpp
 
 pawn.o: pawn.cc pawn.h
 	g++ -Wall -g -c pawn.cc
