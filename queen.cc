@@ -39,7 +39,7 @@ bool Queen::legal_move(int start_row, int start_col, int dest_row, int dest_col,
 
     // Not taking own piece
     if ( board[dest_row][dest_col] != nullptr &&
-         board[start_row][start_col]->colour == board[dest_row][dest_col]->colour ){
+         board[start_row][start_col]->get_colour() == board[dest_row][dest_col]->get_colour() ){
         // cout << endl << "landed on piece with same colour" << endl;
         return false;
     }

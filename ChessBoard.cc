@@ -47,22 +47,10 @@ void ChessBoard::submitMove(string source_square_str, string destination_square_
 
     // turn_count = 0 (white) & turn_count = 1 (black)
     if (get_turn_count() == 0){
-        user_king_pos[0] = W_king_pos[0];
-        user_king_pos[1] = W_king_pos[1];
-        
-        opponent_king_pos[0] = B_king_pos[0];
-        opponent_king_pos[1] = B_king_pos[1];
-
         opponent_colour = 'B';
     }
 
     if (get_turn_count() == 1){
-        user_king_pos[0] = B_king_pos[0];
-        user_king_pos[1] = B_king_pos[1];
-
-        opponent_king_pos[0] = W_king_pos[0];
-        opponent_king_pos[1] = W_king_pos[1];
-
         opponent_colour = 'W';
     }
 

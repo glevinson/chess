@@ -64,7 +64,8 @@ bool Pawn::legal_move(int start_row, int start_col, int dest_row, int dest_col, 
     }
 
     // Cannot move diagonally unless taking opposition piece
-    if ( start_col != dest_col && board[dest_row][dest_col]->colour == colour){
+    if ( start_col != dest_col && 
+         board[dest_row][dest_col]->get_colour() == board[start_row][start_col]->get_colour()){
         return false;
     }
 

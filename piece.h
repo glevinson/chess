@@ -7,7 +7,7 @@
 
 class Piece{
 
-  private:
+  protected:
 
     // Data Mambers:
 
@@ -15,8 +15,6 @@ class Piece{
     char piece_type;
 
     // Member Functions:
-    virtual bool possible_move(int start_col, int start_row, int dest_col, int dest_row) = 0;
-    virtual bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) = 0;
 
     // WORKS
     bool legal_right(int row, int start_col, int dest_col, Piece* board[8][8]);
@@ -35,6 +33,8 @@ class Piece{
   
     char get_colour() const;
     char get_piece_type() const;
+    virtual bool possible_move(int start_col, int start_row, int dest_col, int dest_row) = 0;
+    virtual bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) = 0;
 
     // Constructor
     Piece (char colour, char piece_type)
