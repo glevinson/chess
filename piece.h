@@ -7,7 +7,7 @@
 
 class Piece{
 
-  public:
+  private:
 
     // Data Mambers:
 
@@ -15,9 +15,6 @@ class Piece{
     char piece_type;
 
     // Member Functions:
-
-    char get_colour() const;
-    char get_piece_type() const;
     virtual bool possible_move(int start_col, int start_row, int dest_col, int dest_row) = 0;
     virtual bool legal_move(int start_row, int start_col, int dest_row, int dest_col, Piece* board[8][8]) = 0;
 
@@ -34,7 +31,10 @@ class Piece{
     bool legal_left_down_diagonal(int start_row, int start_col, int steps, Piece* board[8][8]);
     bool legal_right_down_diagonal(int start_row, int start_col, int steps, Piece* board[8][8]);
 
-    
+  public:
+  
+    char get_colour() const;
+    char get_piece_type() const;
 
     // Constructor
     Piece (char colour, char piece_type)

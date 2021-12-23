@@ -18,13 +18,24 @@ using namespace std;
 //************************************************************************
 
 
+int ChessBoard::get_turn_count() const{
+    return turn_count;
+}
+
+void ChessBoard::alternate_turn_count( int turn_count ){
+    this->turn_count = ( turn_count + 1 )%2;
+}
+
 // how make sure they finish in 
 // how make sure they finish in 
 void ChessBoard::submitMove(string source_square_str, string destination_square_str){
 // entering a string above should automatically include the sentinel
 // Which marks the end of a string
 
+    bool empty_destination = true;
     char source_square[3], destination_square[3];
+    char opponent_colour;
+    char opponent_piece;
 
     source_square[0] = source_square_str[0];
     source_square[1] = source_square_str[1];
@@ -35,20 +46,24 @@ void ChessBoard::submitMove(string source_square_str, string destination_square_
     destination_square[2] = '\0';
 
     // turn_count = 0 (white) & turn_count = 1 (black)
-    if (turn_count == 0){
+    if (get_turn_count() == 0){
         user_king_pos[0] = W_king_pos[0];
         user_king_pos[1] = W_king_pos[1];
         
         opponent_king_pos[0] = B_king_pos[0];
         opponent_king_pos[1] = B_king_pos[1];
+
+        opponent_colour = 'B';
     }
 
-    if (turn_count == 1){
+    if (get_turn_count() == 1){
         user_king_pos[0] = B_king_pos[0];
         user_king_pos[1] = B_king_pos[1];
 
         opponent_king_pos[0] = W_king_pos[0];
         opponent_king_pos[1] = W_king_pos[1];
+
+        opponent_colour = 'W';
     }
 
 // Convert board positions to index:
@@ -64,38 +79,46 @@ void ChessBoard::submitMove(string source_square_str, string destination_square_
     }
 
      // Check if moving wrong colour
-    if ( wrong_turn(source[0], source[1], turn_count) ){
-        cout << endl << "It is not " << print_piece_colour( (turn_count+1)%2 ) 
+    if ( wrong_turn(source[0], source[1], get_turn_count()) ){
+        cout << endl << "It is not " << print_piece_colour( (get_turn_count()+1)%2 ) 
              << "'s turn to move" << endl;
         return;
     }
 
     // must add possibility of stalemate
-    // must 
+    if ( stalemate( get_turn_count() ) && !check( user_king_pos[0], user_king_pos[1], get_turn_count() ) ){
+        // board[ destination[0] ][ destination[1] ]
+        cout << endl << "Game over due to stalemate" << endl;
+        return;
+    }
 
     if ( valid_move( source[0], source[1], destination[0], destination[1] ) ){
-        cout << endl << print_piece_colour(turn_count) << "'s " 
+        cout << endl << print_piece_colour(get_turn_count()) << "'s " 
             << print_piece_type(board[source[0]][source[1]]->get_piece_type());
         cout << " moves from " << source_square[0] << source_square[1] << " to " 
              << destination_square[0] << destination_square[1];
         if ( board[ destination[0] ][ destination[1] ] != nullptr ){
-            cout << " taking " << print_piece_colour( (turn_count+1)%2 ) << "'s " ;
+            empty_destination = false;
+            opponent_piece = board[ destination[0] ][ destination[1] ]->get_piece_type();
+            cout << " taking " << print_piece_colour( (get_turn_count()+1)%2 ) << "'s " ;
             cout << print_piece_type( board[ destination[0] ][ destination[1] ]->get_piece_type());
         }
         move_piece( source[0], source[1], destination[0], destination[1] );
 
          // cannot do move if leaves users king in check & replace the piece if has to
          // this check will also change the threatening pieces, so need to reset them
-        if ( check(user_king_pos[0], user_king_pos[1], turn_count)){
+        if ( check(user_king_pos[0], user_king_pos[1], get_turn_count())){
             cout << endl << "User's king is in check, invalid move" << endl;
-            // insert piece lost if required
             move_piece( destination[0], destination[1], source[0], source[1] );
-            return;
+            if ( empty_destination == false ){
+                insert_piece( destination[0], destination[1], opponent_colour, opponent_piece );
+            }
+            return; // check this works
         }
 
     }
     else{
-        cout << endl << print_piece_colour(turn_count) << "'s " 
+        cout << endl << print_piece_colour(get_turn_count()) << "'s " 
              << print_piece_type ( board[ source[0] ][ source[1] ]->get_piece_type() )
              << " cannot move to " << destination_square[0] 
              << destination_square[1] << "!" << endl;
@@ -103,17 +126,17 @@ void ChessBoard::submitMove(string source_square_str, string destination_square_
     }
 
     // turn_count should alternate between 0 & 1 (white & black)
-    turn_count = (turn_count + 1) % 2;
+     alternate_turn_count(turn_count);
 
     // Check if opposition in check-mate
-    if ( check_mate( opponent_king_pos[0], opponent_king_pos[1], turn_count )){
+    if ( check_mate( opponent_king_pos[0], opponent_king_pos[1], get_turn_count() )){
         return;
     }
 
     // Check if opposition in check
-    if ( check( opponent_king_pos[0], opponent_king_pos[1], turn_count ) ){
+    if ( check( opponent_king_pos[0], opponent_king_pos[1], get_turn_count() ) ){
 
-        cout << endl << print_piece_colour(turn_count) << " is in check";
+        cout << endl << print_piece_colour(get_turn_count()) << " is in check";
     }
 
     // need check-mate after here for the appropriate turn-count
@@ -214,22 +237,8 @@ bool ChessBoard::valid_move(int start_row, int start_col, int dest_row, int dest
         return false;
     }
 
-    // King, (kings legal function must make sure it does not move into check)
-
-    // All other pieces
     if ( board[start_row][start_col]->possible_move(start_col, start_row, dest_col, dest_row) && 
          board[start_row][start_col]->legal_move(start_row, start_col, dest_row, dest_col, board)){
-
-            //  if (board[start_row][start_col]->colour == 'B' && check(B_king_pos)){
-            //      return false;
-            //  }
-
-            // if (board[start_row][start_col]->colour == 'B' && check(B_king_pos)){
-            //      return false;
-            //  }
-
-            //  // if that puts own king in check, return false
-            //  // else return true
 
         return true;
     }
@@ -281,25 +290,21 @@ bool ChessBoard::stalemate( int turn_count ){
         user_colour = 'B';
     }
 
-    cout << endl << "colours allocated" << endl;
     // Iterating through the finding every user's piece
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             if ( board[i][j] != nullptr && board[i][j]->get_colour() == user_colour ){
-                cout << endl << "checking piece corresponding to turn: " << turn_count << " at position " << i << j << endl;
                 // Checks if there is any square on the board that piece at (i,j) can move to
                 for (int n = 0; n < 8; n++){
                     for (int m = 0; m < 8; m++){
-                        if (valid_move(i,j,n,m) && i != n && j != m){ 
-                            if ( board[i][j]->get_piece_type() == 'K' ){  // king cannot move into check !!
-
-                            }
-                            cout << endl << "valid move to " << i << j << endl;
+                        if ( board[i][j]->get_piece_type() == 'K' && can_king_move(i,j,n,m,turn_count) ){  // king cannot move into check !!
+                            return false;
+                        }
+                        if ( board[i][j]->get_piece_type() != 'K' && valid_move(i,j,n,m) && i != n && j != m){ 
                             return false;
                         }
                     }
                 }
-                cout << endl << "no valid moves..." << endl;
             }
         }
     }
@@ -514,7 +519,6 @@ bool ChessBoard::can_block_space( int row, int col, int turn_count){
 
             if ( board[i][j] != nullptr && board[i][j]->get_piece_type() != 'K' 
                  && board[i][j]->get_colour() == blocking_colour  && valid_move( i, j, row, col ) ){
-                // cout << endl << "can block space from piece at position: " << i << j << endl;
                 blocking_piece_position[0] = i;
                 blocking_piece_position[1] = j;
                 return true;
@@ -726,31 +730,6 @@ void ChessBoard::load_board(Piece* board[8][8]){
   board[7][4] = new King('W', 'K');
 
 }
-
-// void ChessBoard::load_board(Piece* board[8][8]){
-
-//   cout << "A new chess game is started!";
-
-//   // Bottom white, Top black
-
-//   for (int file = 0; file < 8; file++){
-
-//     // Pawns
-//     board[1][file] = nullptr;
-
-//     board[6][file] = nullptr;
-
-//     // Set unfilled positions to NULL
-//     for (int rank = 0; rank < 8; rank++){
-//       board[rank][file] = nullptr;
-//     }
-//   }
-
-//   board[0][0] = new King('W', 'K');
-//   board[6][5] = new Queen('W', 'Q');
-//   board[7][7] = new King('B', 'K');
-  
-// }
 
 // TESTS
 
